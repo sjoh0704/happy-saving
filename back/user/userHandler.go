@@ -1,19 +1,22 @@
 package user
 
 import (
-	"fmt"
 	"net/http"
 
 	log "github.com/sirupsen/logrus"
-	"github.com/sjoh0704/happysaving/util"
 )
 
-func Test(){
-	fmt.Println("user")
+func Get(http.ResponseWriter, *http.Request) {
+	log.Info("hello")
+		
 }
 
-func Hello (http.ResponseWriter, *http.Request) {
-	util.Init_logging()
+func Post(http.ResponseWriter, *http.Request) {
+	log.Info("hello")
+		
+}
+
+func Delete(http.ResponseWriter, *http.Request) {
 	log.Info("hello")
 		
 }
