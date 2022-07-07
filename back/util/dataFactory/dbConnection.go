@@ -18,7 +18,7 @@ var (
 func CreateConnection(){
 	db_driver := "postgres"
 	db_user := "postgres"
-	db_password := "postgres"
+	db_password := "1q2w3e4r"
 	hostname := "localhost"
 	db_port := "5432"
 	db_name := "postgres"
@@ -30,5 +30,6 @@ func CreateConnection(){
 		log.Error("unable to connect to DB", err)
 		panic(err)
 	}
-
+	log.Info("db connection success")
+ 
 }

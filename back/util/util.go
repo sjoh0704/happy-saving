@@ -1,6 +1,8 @@
 package util
 
 import (
+	"encoding/json"
+	"net/http"
 	"os"
 
 	log "github.com/sirupsen/logrus"
@@ -29,3 +31,33 @@ func Init_logging(){
  // 지정된 모듈에 대한 로깅 수준을 설정 -> DebugLevel 이상 부터 로깅.
  	log.SetLevel(log.DebugLevel)	
 }
+
+
+func SetResponse(res http.ResponseWriter, outString string, outJson interface{}, status int) http.ResponseWriter {
+
+	//set Cors
+	// res.Header().Set("Access-Control-Allow-Origin", "*")
+	res.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+	res.Header().Set("Access-Control-Max-Age", "3628800")
+	res.Header().Set("Access-Control-Expose-Headers", "Content-Type, X-Requested-With, Accept, Authorization, Referer, User-Agent")
+
+	//set Out
+	if outJson != nil {
+		res.Header().Set("Content-Type", "application/json")
+		js, err := json.Marshal(outJson)
+		if err != nil { // 500 error 반환 
+			http.Error(res, err.Error(), http.StatusInternalServerError)
+		}
+		//set StatusCode
+		res.WriteHeader(status)
+		res.Write(js)
+		return res
+
+	} else {
+		//set StatusCode
+		res.WriteHeader(status)
+		res.Write([]byte(outString))
+		return res
+	}
+}
+

@@ -44,13 +44,20 @@ func serveUser(res http.ResponseWriter, req *http.Request){
 	switch req.Method{
 	case http.MethodGet:
 		user.Get(res, req)
+	case http.MethodPost:
+		user.Post(res, req)
+	case http.MethodPut:
+		user.Put(res, req)
+	case http.MethodDelete:
+		user.Delete(res, req)
 	default:
-		log.Error("method not acceptable")
+		log.Error("method not acceptable: ", req.Method)
 	}
 }
 
 func ready(res http.ResponseWriter, req *http.Request){
 	log.Info("OK")
+	util.SetResponse(res, "OK", nil, 200)
 }
 
 func initConnection(){
