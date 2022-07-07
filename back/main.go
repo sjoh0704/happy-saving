@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 
 	log "github.com/sirupsen/logrus"
@@ -9,6 +10,7 @@ import (
 
 	"github.com/sjoh0704/happysaving/user"
 	"github.com/sjoh0704/happysaving/util"
+	datafactory "github.com/sjoh0704/happysaving/util/dataFactory"
 )
 
 var (
@@ -18,15 +20,18 @@ var (
 
 func init(){
 	util.Init_logging()
+	initConnection()
 }
 
 func main(){
-	log.Info("main.go 실행")
+	port := 8000
 	mux = gmux.NewRouter()
 
 	register_multiplexer()
 
-	http.ListenAndServe(":8000", mux)
+	log.Info("listening port: " + fmt.Sprint(port))
+	http.ListenAndServe(":" + fmt.Sprint(port), mux)
+
 }
 
 func register_multiplexer(){
@@ -46,4 +51,8 @@ func serveUser(res http.ResponseWriter, req *http.Request){
 
 func ready(res http.ResponseWriter, req *http.Request){
 	log.Info("OK")
+}
+
+func initConnection(){
+	datafactory.CreateConnection()
 }
