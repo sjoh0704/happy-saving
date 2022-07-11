@@ -1,12 +1,16 @@
 package user
 
-import "time"
+import "fmt"
 
-type UserInfo struct{
+
+type User struct{
 	Id          int64
 	Mail 		string
 	Name 		string
 	Password    string
-	CreatedTime time.Time
-	UpdatedTime time.Time
 }
+
+func (u User) String() string{
+	return fmt.Sprintf("User<%d %s %s>", u.Id, u.Name, u.Mail)
+}
+

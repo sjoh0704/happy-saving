@@ -4,13 +4,14 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/go-pg/pg/orm"
 	log "github.com/sirupsen/logrus"
 
 	gmux "github.com/gorilla/mux"
 
 	"github.com/sjoh0704/happysaving/user"
 	"github.com/sjoh0704/happysaving/util"
-	datafactory "github.com/sjoh0704/happysaving/util/dataFactory"
+	"github.com/sjoh0704/happysaving/util/datafactory"
 )
 
 var (
@@ -20,14 +21,21 @@ var (
 
 func init(){
 	util.Init_logging()
-	initConnection()
+	initDbConnection()
+
 }
 
 func main(){
+	defer datafactory.CloseDB()
 	port := 8000
 	mux = gmux.NewRouter()
 
 	register_multiplexer()
+
+
+
+
+
 
 	log.Info("listening port: " + fmt.Sprint(port))
 	http.ListenAndServe(":" + fmt.Sprint(port), mux)
@@ -60,6 +68,28 @@ func ready(res http.ResponseWriter, req *http.Request){
 	util.SetResponse(res, "OK", nil, 200)
 }
 
-func initConnection(){
-	datafactory.CreateConnection()
+func initDbConnection(){
+	
+	datafactory.ConnectDB()
+
+	if err := CreateSchema(); err != nil{
+		log.Error("cannot create schema", err)
+		panic(err)
+	}
+}
+
+func CreateSchema() error {
+	models := []interface{}{
+		(*user.User)(nil),
+		// (*Story)(nil),
+	}
+	for _, model := range models {
+		err := datafactory.DbPool.Model(model).CreateTable(&orm.CreateTableOptions{
+			IfNotExists: true,
+		})
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
