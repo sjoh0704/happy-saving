@@ -3,6 +3,7 @@ module github.com/sjoh0704/happysaving
 go 1.17
 
 require (
+	github.com/Azure/go-autorest/autorest/date v0.3.0
 	github.com/go-pg/pg v8.0.7+incompatible
 	github.com/gorilla/mux v1.8.0
 	github.com/sirupsen/logrus v1.8.1
@@ -10,6 +11,7 @@ require (
 )
 
 require (
+	github.com/Azure/go-autorest v14.2.0+incompatible // indirect
 	github.com/BurntSushi/toml v1.1.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/kr/pretty v0.1.0 // indirect

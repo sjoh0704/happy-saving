@@ -47,6 +47,7 @@ func SetResponse(res http.ResponseWriter, outString string, outJson interface{},
 		js, err := json.Marshal(outJson)
 		if err != nil { // 500 error 반환 
 			http.Error(res, err.Error(), http.StatusInternalServerError)
+			log.Error(err)
 		}
 		//set StatusCode
 		res.WriteHeader(status)

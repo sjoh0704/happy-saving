@@ -31,12 +31,6 @@ func main(){
 	mux = gmux.NewRouter()
 
 	register_multiplexer()
-
-
-
-
-
-
 	log.Info("listening port: " + fmt.Sprint(port))
 	http.ListenAndServe(":" + fmt.Sprint(port), mux)
 
@@ -44,28 +38,21 @@ func main(){
 
 func register_multiplexer(){
 	mux.HandleFunc("/ready", ready)
-	mux.HandleFunc("/apis/v1/users", serveUser)
+	serveUser()
 }
 
 
-func serveUser(res http.ResponseWriter, req *http.Request){
-	switch req.Method{
-	case http.MethodGet:
-		user.Get(res, req)
-	case http.MethodPost:
-		user.Post(res, req)
-	case http.MethodPut:
-		user.Put(res, req)
-	case http.MethodDelete:
-		user.Delete(res, req)
-	default:
-		log.Error("method not acceptable: ", req.Method)
-	}
+func serveUser(){
+	mux.HandleFunc("/users", user.CreateUser).Methods("POST")
+	mux.HandleFunc("/users", user.GetUsersInfo).Methods("GET")
+	mux.HandleFunc("/users", user.GetUserInfo).Methods("GET")
+	mux.HandleFunc("/users", user.UpdateUserInfo).Methods("PUT")
+	mux.HandleFunc("/users", user.DeleteUser).Methods("DELETE")
 }
 
 func ready(res http.ResponseWriter, req *http.Request){
 	log.Info("OK")
-	util.SetResponse(res, "OK", nil, 200)
+	util.SetResponse(res, "OK", nil, http.StatusAccepted)
 }
 
 func initDbConnection(){
