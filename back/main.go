@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	gmux "github.com/gorilla/mux"
+
 	mux *gmux.Router
 )
 
