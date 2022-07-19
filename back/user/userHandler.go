@@ -7,23 +7,25 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"github.com/sjoh0704/happysaving/util"
-	"github.com/sjoh0704/happysaving/util/datafactory"
+	df "github.com/sjoh0704/happysaving/util/datafactory"
 )
 
+
 func GetUsersInfo(res http.ResponseWriter, req *http.Request) {
-	log.Info("hello")
 
-	user := &User{
-		Name: "test",
-		Mail: "test@test.com",
-		Password: "1234",
-	}
-
-	_, err := datafactory.DbPool.Model(user).Insert()
-
+	users := []User{}
+	err := df.DbPool.Model(&users).Select()
 	if err != nil {
-		log.Error("fail", err)
+		log.Error("getting all users fails ", err)
+		util.SetResponse(res, err.Error(), nil, http.StatusInternalServerError)
+		return
 	}
+
+	for i:=0; i < len(users); i++{
+		users[i].SetPassword("no show")
+	}
+
+	util.SetResponse(res, "", users, http.StatusAccepted)
 }
 
 func GetUserInfo(res http.ResponseWriter, req *http.Request) {
@@ -35,7 +37,7 @@ func GetUserInfo(res http.ResponseWriter, req *http.Request) {
 		Password: "1234",
 	}
 
-	_, err := datafactory.DbPool.Model(user).Insert()
+	_, err := df.DbPool.Model(user).Insert()
 
 	if err != nil {
 		log.Error("fail", err)
@@ -72,13 +74,13 @@ func CreateUser(res http.ResponseWriter, req *http.Request) {
 	user.CreatedAt = time.Now()
 	user.UpdatedAt = time.Now()
 
-	_, err = datafactory.DbPool.Model(user).Insert()
+	_, err = df.DbPool.Model(user).Insert()
 
 	if err != nil {
 		log.Error(err)
 	}
 	util.SetResponse(res, "", user, http.StatusCreated)
-	log.Info("created user: ", user.Name)
+	log.Info("created user: ", user.String())
 }
 
 func DeleteUser(res http.ResponseWriter, req *http.Request) {

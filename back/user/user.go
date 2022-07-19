@@ -16,5 +16,9 @@ type User struct{
 }
 
 func (u User) String() string{
-	return fmt.Sprintf("User<%d %s %s>", u.Id, u.Name, u.Mail)
+	return fmt.Sprintf("User id: %d, mail: %s, name: %s", u.Id, u.Name, u.Mail)
+}
+
+func (u *User) SetPassword(pw string){
+	u.Password = pw
 }
