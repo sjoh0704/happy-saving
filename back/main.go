@@ -12,10 +12,10 @@ import (
 )
 
 var (
-
 	mux *gmux.Router
 )
 
+var apiVersion string = "/apis/v1"
 
 func init(){
 	util.Init_logging()
@@ -41,11 +41,11 @@ func register_multiplexer(){
 
 
 func serveUser(){
-	mux.HandleFunc("/users", user.CreateUser).Methods("POST")
-	mux.HandleFunc("/users", user.GetUsersInfo).Methods("GET")
-	// mux.HandleFunc("/users", user.GetUserInfo).Methods("GET")
-	mux.HandleFunc("/users", user.UpdateUserInfo).Methods("PUT")
-	mux.HandleFunc("/users", user.DeleteUser).Methods("DELETE")
+	mux.HandleFunc(apiVersion + "/users", user.CreateUser).Methods("POST")
+	mux.HandleFunc(apiVersion + "/users", user.GetUsersInfo).Methods("GET")
+	mux.HandleFunc(apiVersion + "/users/{id:[0-9]+}", user.GetUserInfo).Methods("GET")
+	mux.HandleFunc(apiVersion + "/users/{id:[0-9]+}", user.UpdateUserInfo).Methods("POST")
+	mux.HandleFunc(apiVersion + "/users", user.DeleteUser).Methods("DELETE")
 }
 
 func ready(res http.ResponseWriter, req *http.Request){
