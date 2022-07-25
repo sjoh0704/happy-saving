@@ -45,7 +45,7 @@ func serveUser(){
 	mux.HandleFunc(apiVersion + "/users", user.GetUsersInfo).Methods("GET")
 	mux.HandleFunc(apiVersion + "/users/{id:[0-9]+}", user.GetUserInfo).Methods("GET")
 	mux.HandleFunc(apiVersion + "/users/{id:[0-9]+}", user.UpdateUserInfo).Methods("POST")
-	mux.HandleFunc(apiVersion + "/users", user.DeleteUser).Methods("DELETE")
+	mux.HandleFunc(apiVersion + "/users/{id:[0-9]+}", user.DeleteUser).Methods("DELETE")
 }
 
 func ready(res http.ResponseWriter, req *http.Request){

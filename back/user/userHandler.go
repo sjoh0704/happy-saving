@@ -41,9 +41,6 @@ func GetUserInfo(res http.ResponseWriter, req *http.Request) {
 	}
 	log.Info("get info for user id: ", id)
 
-
-
-
 	user := &User{Id: int64(id)}
 	err = df.DbPool.Model(user).WherePK().Select()
 
@@ -143,6 +140,22 @@ func CreateUser(res http.ResponseWriter, req *http.Request) {
 }
 
 func DeleteUser(res http.ResponseWriter, req *http.Request) {
-	log.Info("hello")
+	log.Info("Deleting user")
+	vars := gmux.Vars(req)
+	id, err := strconv.Atoi(vars["id"])
+	if err != nil{
+		log.Error("deleting user fails")
+		util.SetResponse(res, err.Error(), nil, http.StatusBadRequest)
+		return
+	}
+	user := &User{Id: int64(id)}
+	_, err = df.DbPool.Model(user).WherePK().Delete()
+
+	if err != nil{
+		log.Error("deleting user fails")
+		util.SetResponse(res, err.Error(), nil, http.StatusInternalServerError)
+		return
+	}
 	
+	util.SetResponse(res, "deleting user success", nil, http.StatusAccepted)
 }
