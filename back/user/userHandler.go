@@ -23,11 +23,7 @@ func GetUsersInfo(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	for i:=0; i < len(users); i++{
-		users[i].SetPassword("no show")
-	}
-
-	util.SetResponse(res, "", users, http.StatusAccepted)
+	util.SetResponse(res, "success", users, http.StatusAccepted)
 }
 
 func GetUserInfo(res http.ResponseWriter, req *http.Request) {
@@ -41,7 +37,7 @@ func GetUserInfo(res http.ResponseWriter, req *http.Request) {
 	}
 	log.Info("get info for user id: ", id)
 
-	user := &User{Id: int64(id)}
+	user := &User{ID: int64(id)}
 	err = df.DbPool.Model(user).WherePK().Select()
 
 	if err != nil {
@@ -50,8 +46,7 @@ func GetUserInfo(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 	log.Info(user)
-	user.SetPassword("no show")
-	util.SetResponse(res, "", user, http.StatusOK)
+	util.SetResponse(res, "success", user, http.StatusOK)
 }
 
 func UpdateUserInfo(res http.ResponseWriter, req *http.Request) {
@@ -65,7 +60,7 @@ func UpdateUserInfo(res http.ResponseWriter, req *http.Request) {
 
 	// user가 있는지 체크 
 	existUser := &User{
-		Id: int64(id),
+		ID: int64(id),
 	}
 	
 	err = df.DbPool.Model(existUser).WherePK().Select()
@@ -79,7 +74,7 @@ func UpdateUserInfo(res http.ResponseWriter, req *http.Request) {
 	log.Info("update info for user id: ", id)
 	
 	newUserInfo := &User{
-		Id: int64(id),
+		ID: int64(id),
 	}
 
 	err = json.NewDecoder(req.Body).Decode(newUserInfo)
@@ -90,7 +85,13 @@ func UpdateUserInfo(res http.ResponseWriter, req *http.Request) {
 		existUser.SetMail(newUserInfo.Mail)
 	}
 	if newUserInfo.Password != ""{
-		existUser.SetPassword(newUserInfo.Password)
+		hashedPasswd, err := util.HashPassword(newUserInfo.Password)
+		if err != nil {
+			log.Error("getting user info fails: ", err)
+			util.SetResponse(res, err.Error(), nil, http.StatusInternalServerError)
+			return
+		}
+		existUser.SetPassword(hashedPasswd)
 	}
 	
 	existUser.UpdateTime()
@@ -102,7 +103,7 @@ func UpdateUserInfo(res http.ResponseWriter, req *http.Request) {
 		util.SetResponse(res, err.Error(), nil, http.StatusBadRequest)
 		return
 	}
-	util.SetResponse(res, "", existUser, http.StatusOK)
+	util.SetResponse(res, "success", existUser, http.StatusOK)
 }
 
 func CreateUser(res http.ResponseWriter, req *http.Request) {
@@ -129,13 +130,20 @@ func CreateUser(res http.ResponseWriter, req *http.Request) {
 
 	user.CreatedAt = time.Now()
 	user.UpdatedAt = time.Now()
+	hashedPasswd, err := util.HashPassword(user.Password)
+	if err != nil {
+		log.Error("creating user fails: ", err)
+		util.SetResponse(res, err.Error(), nil, http.StatusInternalServerError)
+		return
+	}
+	user.SetPassword(hashedPasswd)
 
 	_, err = df.DbPool.Model(user).Insert()
 
 	if err != nil {
 		log.Error(err)
 	}
-	util.SetResponse(res, "", user, http.StatusCreated)
+	util.SetResponse(res, "success", user, http.StatusCreated)
 	log.Info("created user: ", user.String())
 }
 
@@ -148,7 +156,7 @@ func DeleteUser(res http.ResponseWriter, req *http.Request) {
 		util.SetResponse(res, err.Error(), nil, http.StatusBadRequest)
 		return
 	}
-	user := &User{Id: int64(id)}
+	user := &User{ID: int64(id)}
 	_, err = df.DbPool.Model(user).WherePK().Delete()
 
 	if err != nil{
@@ -157,5 +165,5 @@ func DeleteUser(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 	
-	util.SetResponse(res, "deleting user success", nil, http.StatusAccepted)
+	util.SetResponse(res, "success", nil, http.StatusAccepted)
 }

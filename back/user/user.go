@@ -7,7 +7,7 @@ import (
 
 
 type User struct{
-	Id          int64 `json:"id`
+	ID          int64 `json:"id`
 	Mail 		string	`json:"mail"`
 	Name 		string	`json:"name"`
 	Password    string	`json:"password"`
@@ -16,7 +16,7 @@ type User struct{
 }
 
 func (u User) String() string{
-	return fmt.Sprintf("User id: %d, mail: %s, name: %s", u.Id, u.Name, u.Mail)
+	return fmt.Sprintf("User id: %d, mail: %s, name: %s", u.ID, u.Name, u.Mail)
 }
 
 func (u *User) SetPassword(pw string){

@@ -4,8 +4,11 @@ import (
 	"encoding/json"
 	"net/http"
 	"os"
+	"time"
 
+	"github.com/golang-jwt/jwt/v4"
 	log "github.com/sirupsen/logrus"
+	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
@@ -32,6 +35,11 @@ func Init_logging(){
  	log.SetLevel(log.DebugLevel)	
 }
 
+type Message struct{
+	Payload interface{} `json:"payload"`
+	Msg string	`json:"message"`
+}
+
 
 func SetResponse(res http.ResponseWriter, outString string, outJson interface{}, status int) http.ResponseWriter {
 
@@ -41,24 +49,48 @@ func SetResponse(res http.ResponseWriter, outString string, outJson interface{},
 	res.Header().Set("Access-Control-Max-Age", "3628800")
 	res.Header().Set("Access-Control-Expose-Headers", "Content-Type, X-Requested-With, Accept, Authorization, Referer, User-Agent")
 
-	//set Out
-	if outJson != nil {
-		res.Header().Set("Content-Type", "application/json")
-		js, err := json.Marshal(outJson)
-		if err != nil { // 500 error 반환 
-			http.Error(res, err.Error(), http.StatusInternalServerError)
-			log.Error(err)
-		}
-		//set StatusCode
-		res.WriteHeader(status)
-		res.Write(js)
-		return res
-
-	} else {
-		//set StatusCode
-		res.WriteHeader(status)
-		res.Write([]byte(outString))
-		return res
+	msg := Message{
+		Payload: outJson,
+		Msg: outString,
 	}
+	res.Header().Set("Content-Type", "application/json")
+	js, err := json.Marshal(msg)
+	if err != nil { // 500 error 반환 
+		http.Error(res, err.Error(), http.StatusInternalServerError)
+		log.Error(err)
+	}
+	//set StatusCode
+	res.WriteHeader(status)
+	res.Write(js)
+	return res
 }
 
+
+func HashPassword(password string) (string, error) {
+    bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+    return string(bytes), err
+}
+
+func CheckPasswordHash(hashVal, userPw string) bool {
+    err := bcrypt.CompareHashAndPassword([]byte(hashVal), []byte(userPw))
+    if err != nil {
+        return false
+    } else {
+        return true
+    }
+}
+
+func CreateJWT(Email string) (string, error) {
+    mySigningKey := []byte(os.Getenv("SECRET_KEY"))
+
+    aToken := jwt.New(jwt.SigningMethodHS256)
+    claims := aToken.Claims.(jwt.MapClaims)
+    claims["Email"] = Email
+    claims["exp"] = time.Now().Add(time.Minute * 20).Unix()
+
+    tk, err := aToken.SignedString(mySigningKey)
+    if err != nil {
+        return "", err
+    }
+    return tk, nil
+}

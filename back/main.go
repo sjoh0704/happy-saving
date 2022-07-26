@@ -3,12 +3,14 @@ package main
 import (
 	"fmt"
 	"net/http"
+
 	"github.com/go-pg/pg/orm"
-	log "github.com/sirupsen/logrus"
 	gmux "github.com/gorilla/mux"
+	log "github.com/sirupsen/logrus"
 	"github.com/sjoh0704/happysaving/user"
 	"github.com/sjoh0704/happysaving/util"
 	"github.com/sjoh0704/happysaving/util/datafactory"
+	"github.com/joho/godotenv"
 )
 
 var (
@@ -20,10 +22,11 @@ var apiVersion string = "/apis/v1"
 func init(){
 	util.Init_logging()
 	initDbConnection()
-
+	godotenv.Load(".env") // .env에서 필요한 변수 가져오기 
 }
 
 func main(){
+
 	defer datafactory.CloseDB()
 	port := 8000
 	mux = gmux.NewRouter()
