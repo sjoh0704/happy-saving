@@ -8,6 +8,7 @@ import (
 	gmux "github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
 	"github.com/sjoh0704/happysaving/user"
+	"github.com/sjoh0704/happysaving/auth"
 	"github.com/sjoh0704/happysaving/util"
 	"github.com/sjoh0704/happysaving/util/datafactory"
 	"github.com/joho/godotenv"
@@ -39,6 +40,7 @@ func main(){
 
 func register_multiplexer(){
 	mux.HandleFunc("/ready", ready)
+	mux.HandleFunc("/auth", auth.Auth)
 	serveUser()
 }
 

@@ -129,22 +129,22 @@ func CreateUser(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 	// 동일 mail을 가진 user가 있는지 check
-	
 	count, err := df.DbPool.
 		Model(&User{}).
 		Where("mail = ?", user.Mail).
 		Count()
+	
+	if err != nil {
+		log.Error("creating user fails: ", err)
+		util.SetResponse(res, err.Error(), nil, http.StatusInternalServerError)
+		return
+	}
 	if count >= 1{
 		log.Error("user email already exists")
 		util.SetResponse(res, "user already exists", nil, http.StatusBadRequest)
 		return
 	}
 
-	if err != nil {
-		log.Error("creating user fails: ", err)
-		util.SetResponse(res, err.Error(), nil, http.StatusInternalServerError)
-		return
-	}
 
 	log.Info("creating user")
 

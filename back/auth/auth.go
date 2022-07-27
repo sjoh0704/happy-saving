@@ -3,68 +3,57 @@ package auth
 import (
 	"encoding/json"
 	"net/http"
-	"strconv"
-	gmux "github.com/gorilla/mux"
+
 	log "github.com/sirupsen/logrus"
+	"github.com/sjoh0704/happysaving/user"
 	"github.com/sjoh0704/happysaving/util"
 	df "github.com/sjoh0704/happysaving/util/datafactory"
-	"github.com/sjoh0704/happysaving/user"
 )
 
+// 인증
 func Auth(res http.ResponseWriter, req *http.Request) {
-	
-	vars := gmux.Vars(req)
-	id, err := strconv.Atoi(vars["id"])
-	if err != nil{
-		log.Error("getting user info fails: ", err)
+
+	authUser := &user.User{}
+	err := json.NewDecoder(req.Body).Decode(authUser)
+	if err != nil {
+		log.Error("auth error: ", err.Error())
 		util.SetResponse(res, err.Error(), nil, http.StatusBadRequest)
 		return
 	}
-
-	// user가 있는지 체크 
-	existUser := &user.User{
-		ID: int64(id),
+	if authUser.Mail == "" {
+		util.SetResponse(res, "mail doesn't exist", nil, http.StatusBadRequest)
+		return
 	}
-	
-	err = df.DbPool.Model(existUser).WherePK().Select()
-	if err != nil{
-		log.Error("getting user info fails: ", err)
-		util.SetResponse(res, err.Error(), nil, http.StatusBadRequest)
+	if authUser.Password == "" {
+		util.SetResponse(res, "password doesn't exist", nil, http.StatusBadRequest)
 		return
 	}
 
-	// user가 있으면 업데이트 
-	log.Info("update info for user id: ", id)
-	
-	newUserInfo := &user.User{
-		ID: int64(id),
-	}
+	userCheck := &user.User{}
 
-	err = json.NewDecoder(req.Body).Decode(newUserInfo)
-	if newUserInfo.Name != ""{
-		existUser.SetName(newUserInfo.Name)
-	}
-	if newUserInfo.Mail != ""{
-		existUser.SetMail(newUserInfo.Mail)
-	}
-	if newUserInfo.Password != ""{
-		hashedPasswd, err := util.HashPassword(newUserInfo.Password)
-		if err != nil {
-			log.Error("getting user info fails: ", err)
-			util.SetResponse(res, err.Error(), nil, http.StatusInternalServerError)
-			return
-		}
-		existUser.SetPassword(hashedPasswd)
-	}
-	
-	existUser.UpdateTime()
+	// user mail이 있는지 check
+	userExist, err := df.DbPool.
+		Model(userCheck).
+		Where("mail = ?", authUser.Mail).
+		SelectAndCount()
 
-	_, err = df.DbPool.Model(existUser).WherePK().Update()
-
-	if err != nil{
-		log.Error("updating user fails: ", err)
-		util.SetResponse(res, err.Error(), nil, http.StatusBadRequest)
+	if err != nil {
+		log.Error("auth error: ", err.Error())
+		util.SetResponse(res, err.Error(), nil, http.StatusInternalServerError)
+		return
+	} else if userExist == 0 { // user가 없다면
+		util.SetResponse(res, "email or password is not correct", nil, http.StatusBadRequest)
 		return
 	}
-	util.SetResponse(res, "success", existUser, http.StatusOK)
+
+	if util.CheckPasswordHash(userCheck.Password, authUser.Password) { // login 성공 
+		log.Info("user login success: ", userCheck)
+		util.SetResponse(res, "login success", nil, http.StatusOK)
+	
+	} else { // login 실패 
+		log.Info("user login fails: ", userCheck)
+		util.SetResponse(res, "email or password is not correct", nil, http.StatusBadRequest)
+
+	}
+
 }
