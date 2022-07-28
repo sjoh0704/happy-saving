@@ -3,6 +3,7 @@ package auth
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/sjoh0704/happysaving/user"
@@ -10,7 +11,7 @@ import (
 	df "github.com/sjoh0704/happysaving/util/datafactory"
 )
 
-// 인증
+// 로그인(인증)
 func Auth(res http.ResponseWriter, req *http.Request) {
 
 	authUser := &user.User{}
@@ -46,14 +47,26 @@ func Auth(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if util.CheckPasswordHash(userCheck.Password, authUser.Password) { // login 성공 
-		log.Info("user login success: ", userCheck)
-		util.SetResponse(res, "login success", nil, http.StatusOK)
-	
-	} else { // login 실패 
+	if !util.CheckPasswordHash(userCheck.Password, authUser.Password) { // login 실패
 		log.Info("user login fails: ", userCheck)
 		util.SetResponse(res, "email or password is not correct", nil, http.StatusBadRequest)
+		return
 
 	}
+	accessToken, err := util.CreateJWT(authUser.Mail)
+	if err != nil {
+		log.Info("user login fails: ", userCheck)
+		util.SetResponse(res, err.Error(), nil, http.StatusBadRequest)
+		return
+	}
 
+	http.SetCookie(res, &http.Cookie{
+		Name:     "access-token",
+		Value:    accessToken,
+		HttpOnly: true,
+		Expires:  time.Now().Add(time.Hour * 24),
+	})
+
+	log.Info("user login success: ", userCheck)
+	util.SetResponse(res, "login success", nil, http.StatusOK)
 }

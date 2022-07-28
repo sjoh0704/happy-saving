@@ -27,7 +27,6 @@ func init(){
 }
 
 func main(){
-
 	defer datafactory.CloseDB()
 	port := 8000
 	mux = gmux.NewRouter()
