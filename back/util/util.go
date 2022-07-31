@@ -4,9 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"os"
-	"time"
-
-	"github.com/golang-jwt/jwt/v4"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/natefinch/lumberjack.v2"
@@ -78,26 +75,4 @@ func CheckPasswordHash(hashVal, userPw string) bool {
     } else {
         return true
     }
-}
-
-// jwt는 header, payload, signature로 이루어져 있음
-// payload에는 정보의 한 조각인 claim을 담을 수 있음 
-func CreateJWT(Email string) (string, error) {
-    mySigningKey := []byte(os.Getenv("SECRET_KEY"))
-
-    aToken := jwt.New(jwt.SigningMethodHS256) 
-    claims := aToken.Claims.(jwt.MapClaims)
-    claims["Email"] = Email // private claim으로 중복되지 않는 값이 들어가도록 한다. 
-    claims["exp"] = time.Now().Add(time.Minute * 20).Unix() // 20분 후에 만료 
-	claims["iss"] = "issuer"
-	claims["sub"] = "sub title"
-	claims["aud"] = "audience"
-
-	// 서명은 다음과 같이 구성
-	// HMACSHA256(base64UrlEncode(header) + "." + base64UrlEncode(payload), secret)
-    tk, err := aToken.SignedString(mySigningKey)
-    if err != nil {
-        return "", err
-    }
-    return tk, nil
 }

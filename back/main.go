@@ -10,6 +10,8 @@ import (
 	"github.com/sjoh0704/happysaving/user"
 	"github.com/sjoh0704/happysaving/auth"
 	"github.com/sjoh0704/happysaving/util"
+
+	md "github.com/sjoh0704/happysaving/middleware"
 	"github.com/sjoh0704/happysaving/util/datafactory"
 	"github.com/joho/godotenv"
 )
@@ -32,14 +34,15 @@ func main(){
 	mux = gmux.NewRouter()
 
 	register_multiplexer()
+	mux.Use(md.TokenAuthMiddleware)
 	log.Info("listening port: " + fmt.Sprint(port))
 	http.ListenAndServe(":" + fmt.Sprint(port), mux)
 
 }
 
 func register_multiplexer(){
-	mux.HandleFunc("/ready", ready)
-	mux.HandleFunc("/auth", auth.Auth)
+	mux.HandleFunc("/ready", ready).Methods("GET")
+	mux.HandleFunc("/auth", auth.Auth).Methods("POST")
 	serveUser()
 }
 

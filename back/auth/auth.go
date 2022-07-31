@@ -3,8 +3,10 @@ package auth
 import (
 	"encoding/json"
 	"net/http"
+	"os"
 	"time"
 
+	"github.com/golang-jwt/jwt/v4"
 	log "github.com/sirupsen/logrus"
 	"github.com/sjoh0704/happysaving/user"
 	"github.com/sjoh0704/happysaving/util"
@@ -53,7 +55,7 @@ func Auth(res http.ResponseWriter, req *http.Request) {
 		return
 
 	}
-	accessToken, err := util.CreateJWT(authUser.Mail)
+	accessToken, err := CreateJWT(authUser.Mail)
 	if err != nil {
 		log.Info("user login fails: ", userCheck)
 		util.SetResponse(res, err.Error(), nil, http.StatusBadRequest)
@@ -69,4 +71,50 @@ func Auth(res http.ResponseWriter, req *http.Request) {
 
 	log.Info("user login success: ", userCheck)
 	util.SetResponse(res, "login success", nil, http.StatusOK)
+}
+
+
+// jwt는 header, payload, signature로 이루어져 있음
+// payload에는 정보의 한 조각인 claim을 담을 수 있음 
+func CreateJWT(Email string) (string, error) {
+    mySigningKey := []byte(os.Getenv("SECRET_KEY"))
+
+    aToken := jwt.New(jwt.SigningMethodHS256) 
+    claims := aToken.Claims.(jwt.MapClaims)
+    claims["Email"] = Email // private claim으로 중복되지 않는 값이 들어가도록 한다. 
+    claims["exp"] = time.Now().Add(time.Minute * 100).Unix() // 20분 후에 만료 
+	claims["iss"] = "issuer"
+	claims["sub"] = "sub title"
+	claims["aud"] = "audience"
+
+	// 서명은 다음과 같이 구성
+	// HMACSHA256(base64UrlEncode(header) + "." + base64UrlEncode(payload), secret)
+    tk, err := aToken.SignedString(mySigningKey)
+    if err != nil {
+        return "", err
+    }
+    return tk, nil
+}
+
+func VerifiyJWTToken(token string)(bool, error){
+	if token == ""{
+		return false, jwt.ErrInvalidKey
+	}
+
+	claims := jwt.MapClaims{}
+
+	_, err := jwt.ParseWithClaims(token, &claims, func(t *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("SECRET_KEY")), nil
+	})
+
+	if err != nil {
+		return false, err
+	}
+	if email, ok := claims["Email"]; ok {
+		log.Info("Authenticated user: ", email)	
+	}else{
+		return false, nil
+	}
+	
+	return true, nil
 }
