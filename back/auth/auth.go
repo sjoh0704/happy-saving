@@ -8,7 +8,7 @@ import (
 
 	"github.com/golang-jwt/jwt/v4"
 	log "github.com/sirupsen/logrus"
-	"github.com/sjoh0704/happysaving/user"
+	"github.com/sjoh0704/happysaving/model"
 	"github.com/sjoh0704/happysaving/util"
 	df "github.com/sjoh0704/happysaving/util/datafactory"
 )
@@ -16,7 +16,7 @@ import (
 // 로그인(인증)
 func Auth(res http.ResponseWriter, req *http.Request) {
 
-	authUser := &user.User{}
+	authUser := &model.User{}
 	err := json.NewDecoder(req.Body).Decode(authUser)
 	if err != nil {
 		log.Error("auth error: ", err.Error())
@@ -32,7 +32,7 @@ func Auth(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	userCheck := &user.User{}
+	userCheck := &model.User{}
 
 	// user mail이 있는지 check
 	userExist, err := df.DbPool.

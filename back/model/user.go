@@ -1,21 +1,19 @@
-package user
+package model
 
 import (
 	"fmt"
 	"time"
-
-	"github.com/sjoh0704/happysaving/post"
 )
 
 type User struct {
-	ID        int64        `json:"id`
-	Mail      string       `json:"mail"`
-	Name      string       `json:"name"`
-	Password  string       `json:"password"`
-	Gender    Gender       `json:"gender"`
-	CreatedAt time.Time    `json:"created_at"`
-	UpdatedAt time.Time    `json:"updated_at"`
-	Posts     []*post.Post `pg:"rel:has-many"`
+	ID        int64     `json:"id"`
+	Mail      string    `json:"mail"`
+	Name      string    `json:"name"`
+	Password  string    `json:"password"`
+	Gender    Gender    `json:"gender"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+	Posts     []*Post   `pg:"rel:has-many"`
 }
 
 func (u User) String() string {

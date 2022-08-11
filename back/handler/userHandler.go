@@ -1,4 +1,4 @@
-package user
+package handler
 
 import (
 	"encoding/json"
@@ -8,6 +8,7 @@ import (
 
 	gmux "github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
+	"github.com/sjoh0704/happysaving/model"
 	"github.com/sjoh0704/happysaving/util"
 	df "github.com/sjoh0704/happysaving/util/datafactory"
 )
@@ -15,7 +16,7 @@ import (
 func GetUsersInfo(res http.ResponseWriter, req *http.Request) {
 
 	log.Info("get all users info")
-	users := []User{}
+	users := []model.User{}
 	err := df.DbPool.Model(&users).Select()
 	if err != nil {
 		log.Error("getting all users fails: ", err)
@@ -37,7 +38,7 @@ func GetUserInfo(res http.ResponseWriter, req *http.Request) {
 	}
 	log.Info("get info for user id: ", id)
 
-	user := &User{ID: int64(id)}
+	user := &model.User{ID: int64(id)}
 	err = df.DbPool.Model(user).WherePK().Select()
 
 	if err != nil {
@@ -59,7 +60,7 @@ func UpdateUserInfo(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// user가 있는지 체크
-	existUser := &User{
+	existUser := &model.User{
 		ID: int64(id),
 	}
 
@@ -73,7 +74,7 @@ func UpdateUserInfo(res http.ResponseWriter, req *http.Request) {
 	// user가 있으면 업데이트
 	log.Info("update info for user id: ", id)
 
-	newUserInfo := &User{
+	newUserInfo := &model.User{
 		ID: int64(id),
 	}
 
@@ -109,7 +110,7 @@ func UpdateUserInfo(res http.ResponseWriter, req *http.Request) {
 // 사용자 회원가입
 func CreateUser(res http.ResponseWriter, req *http.Request) {
 
-	user := &User{}
+	user := &model.User{}
 	err := json.NewDecoder(req.Body).Decode(user)
 	if err != nil {
 		util.SetResponse(res, err.Error(), nil, http.StatusBadRequest)
@@ -128,9 +129,15 @@ func CreateUser(res http.ResponseWriter, req *http.Request) {
 		util.SetResponse(res, "password doesn't exist", nil, http.StatusBadRequest)
 		return
 	}
+
+	if user.Gender != model.Female && user.Gender != model.Male {
+		util.SetResponse(res, "gender info is not correct", nil, http.StatusBadRequest)
+		return
+	}
+
 	// 동일 mail을 가진 user가 있는지 check
 	count, err := df.DbPool.
-		Model(&User{}).
+		Model(&model.User{}).
 		Where("mail = ?", user.Mail).
 		Count()
 	
@@ -176,7 +183,7 @@ func DeleteUser(res http.ResponseWriter, req *http.Request) {
 		util.SetResponse(res, err.Error(), nil, http.StatusBadRequest)
 		return
 	}
-	user := &User{ID: int64(id)}
+	user := &model.User{ID: int64(id)}
 	_, err = df.DbPool.Model(user).WherePK().Delete()
 
 	if err != nil {
