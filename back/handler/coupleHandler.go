@@ -17,7 +17,7 @@ import (
 
 func GetCouplesInfo(res http.ResponseWriter, req *http.Request) {
 
-	log.Info("get all couples info")
+	log.Info("GetCouplesInfo")
 	couples := []model.Couple{}
 	err := df.DbPool.Model(&couples).Select()
 	if err != nil {
@@ -30,6 +30,7 @@ func GetCouplesInfo(res http.ResponseWriter, req *http.Request) {
 }
 
 func GetCoupleInfo(res http.ResponseWriter, req *http.Request) {
+	log.Info("GetCoupleInfo")
 	vars := gmux.Vars(req)
 	id, err := strconv.Atoi(vars["id"])
 
@@ -41,29 +42,24 @@ func GetCoupleInfo(res http.ResponseWriter, req *http.Request) {
 	log.Info("get info for couple id: ", id)
 
 	couple := &model.Couple{ID: int64(id)}
-	err = df.DbPool.Model(couple).WherePK().Select()
+	err = df.DbPool.Model(couple).
+		Relation("Receiver").
+		Relation("Sender").
+		WherePK().
+		Select()
 
 	if err != nil {
 		log.Error("getting couple info fails: ", err)
 		util.SetResponse(res, err.Error(), nil, http.StatusBadRequest)
 		return
 	}
+
 	log.Info(couple)
 	util.SetResponse(res, "success", couple, http.StatusOK)
-
-	// test 
-	c := new(model.Couple)
-	_ = df.DbPool.Model(c).
-		Relation("Sender").
-		Where("couples.id = ?", id).
-		Select()
-
-	util.SetResponse(res, "success", c, http.StatusOK)
-
-	log.Info(c)
 }
 
 func RequestCouple(res http.ResponseWriter, req *http.Request) {
+	log.Info("RequestCouple")
 	cr := &model.Couple{}
 
 	err := json.NewDecoder(req.Body).Decode(cr)
@@ -76,14 +72,16 @@ func RequestCouple(res http.ResponseWriter, req *http.Request) {
 		util.SetResponse(res, "phase cannot exist", nil, http.StatusBadRequest)
 		return
 	}
+	if cr.SenderId == 0 || cr.ReceiverId == 0 || cr.SenderId == cr.ReceiverId {
+		util.SetResponse(res, "sender id or receiver id has problem", nil, http.StatusBadRequest)
+		return
+	}
 
-	// 동일 mail을 가진 user가 있는지 check
+	// couple이 이미 있는지를 체크
 	count, err := df.DbPool.
 		Model(&model.Couple{}).
 		Where("sender_id = ? and receiver_id = ?", cr.SenderId, cr.ReceiverId).
 		Count()
-
-	log.Info(count)
 
 	if err != nil {
 		log.Error("request couple fails: ", err)
@@ -93,6 +91,30 @@ func RequestCouple(res http.ResponseWriter, req *http.Request) {
 	if count >= 1 {
 		log.Error("couple request already exists")
 		util.SetResponse(res, "couple relation already exists", nil, http.StatusBadRequest)
+		return
+	}
+
+	// 있는 User인지 체크
+	user1 := &model.User{}
+	err = df.DbPool.Model(user1).Where("id = ?", cr.SenderId).Select()
+	if err != nil {
+		log.Error("user doesn't exist")
+		util.SetResponse(res, err.Error(), nil, http.StatusBadRequest)
+		return
+	}
+
+	user2 := &model.User{}
+	err = df.DbPool.Model(user2).Where("id = ?", cr.ReceiverId).Select()
+	if err != nil {
+		log.Error("user doesn't exist")
+		util.SetResponse(res, err.Error(), nil, http.StatusBadRequest)
+		return
+	}
+
+	// user 성별 체크
+	if user1.Gender == user2.Gender {
+		log.Error("users have same genders. cannot create relation")
+		util.SetResponse(res, "users have same genders. cannot create relation", nil, http.StatusBadRequest)
 		return
 	}
 
@@ -111,61 +133,95 @@ func RequestCouple(res http.ResponseWriter, req *http.Request) {
 	log.Info("created couple relation: ", cr.String())
 }
 
+// c := &model.Couple{}
+// err = df.DbPool.Model(c).
+// 	Relation("Sender").
+// 	Relation("Receiver").
+// 	Where("couple.id = ?", id).
+// 	Select()
+// if err != nil {
+// 	log.Error(err)
+// }
+
+// util.SetResponse(res, "success", c, http.StatusOK)
+
+// log.Info(c)
+
 func ResponseForRequestCouple(res http.ResponseWriter, req *http.Request) {
 
-	// user := &User{}
-	// err := json.NewDecoder(req.Body).Decode(user)
-	// if err != nil {
-	// 	util.SetResponse(res, err.Error(), nil, http.StatusBadRequest)
-	// 	return
-	// }
+	log.Info("ResponseForRequestCouple")
+	vars := gmux.Vars(req)
+	id, err := strconv.Atoi(vars["id"])
 
-	// if user.Name == "" {
-	// 	util.SetResponse(res, "name doesn't exist", nil, http.StatusBadRequest)
-	// 	return
-	// }
-	// if user.Mail == "" {
-	// 	util.SetResponse(res, "mail doesn't exist", nil, http.StatusBadRequest)
-	// 	return
-	// }
-	// if user.Password == "" {
-	// 	util.SetResponse(res, "password doesn't exist", nil, http.StatusBadRequest)
-	// 	return
-	// }
-	// // 동일 mail을 가진 user가 있는지 check
-	// count, err := df.DbPool.
-	// 	Model(&User{}).
-	// 	Where("mail = ?", user.Mail).
-	// 	Count()
+	if err != nil {
+		log.Error(err)
+		util.SetResponse(res, err.Error(), nil, http.StatusBadRequest)
+		return
+	}
+	// 제대로된 요청인지 확인
+	cr := &model.Couple{}
+	err = json.NewDecoder(req.Body).Decode(cr)
+	if err != nil {
+		log.Error(err)
+		util.SetResponse(res, err.Error(), nil, http.StatusBadRequest)
+		return
+	}
+	// 클라이언트는 리시버 id로 보내야 함
+	if cr.ReceiverId == 0 {
+		log.Error("doesn't send receiver id")
+		util.SetResponse(res, "doesn't send receiver id", nil, http.StatusBadRequest)
+		return
+	}
+	// phase 체크
+	if !(cr.Phase == model.Approved || cr.Phase == model.Denyed) {
+		log.Error("phase only can be Approved or Denyed")
+		util.SetResponse(res, "phase only can be Approved or Denyed", nil, http.StatusBadRequest)
+		return
+	}
 
-	// if err != nil {
-	// 	log.Error("creating user fails: ", err)
-	// 	util.SetResponse(res, err.Error(), nil, http.StatusInternalServerError)
-	// 	return
-	// }
-	// if count >= 1{
-	// 	log.Error("user email already exists")
-	// 	util.SetResponse(res, "user already exists", nil, http.StatusBadRequest)
-	// 	return
-	// }
+	// couple이 있는지 확인
+	existCouple := &model.Couple{}
+	err = df.DbPool.Model(existCouple).
+		Where("id = ?", id).
+		Select()
+	
+	if err != nil {
+		log.Error(err)
+		util.SetResponse(res, err.Error(), nil, http.StatusBadRequest)
+		return
+	}
+	
+	// 이미 처리된 Phase라면 패스
+	if existCouple.Phase == model.Approved || existCouple.Phase == model.Denyed {
+		log.Error("phase already is processed")
+		util.SetResponse(res, "phase already is processed", nil, http.StatusBadRequest)
+		return
+	}
 
-	// log.Info("creating user")
+	if cr.Phase == model.Approved{
+		existCouple.Phase = model.Approved
+		existCouple.UpdatedAt = time.Now()
+		_, err = df.DbPool.Model(existCouple).WherePK().Update()
+		if err != nil{
+			log.Error(err)
+			util.SetResponse(res, err.Error(), nil, http.StatusInternalServerError)
+			return
+		}
+		log.Info("phase is changed to Approved")
+		util.SetResponse(res, "phase is changed to Approved", existCouple, http.StatusOK)
+		
 
-	// user.CreatedAt = time.Now()
-	// user.UpdatedAt = time.Now()
-	// hashedPasswd, err := util.HashPassword(user.Password)
-	// if err != nil {
-	// 	log.Error("creating user fails: ", err)
-	// 	util.SetResponse(res, err.Error(), nil, http.StatusInternalServerError)
-	// 	return
-	// }
-	// user.SetPassword(hashedPasswd)
-
-	// _, err = df.DbPool.Model(user).Insert()
-
-	// if err != nil {
-	// 	log.Error(err)
-	// }
-	// util.SetResponse(res, "success", user, http.StatusCreated)
-	// log.Info("created user: ", user.String())
+	}else{
+		existCouple.Phase = model.Denyed
+		existCouple.UpdatedAt = time.Now()
+		_, err = df.DbPool.Model(existCouple).WherePK().Update()
+		if err != nil{
+			log.Error(err)
+			util.SetResponse(res, err.Error(), nil, http.StatusInternalServerError)
+			return
+		}
+		log.Info("phase is changed to Denyed")
+		util.SetResponse(res, "phase is changed to Denyed", existCouple, http.StatusOK)
+	}
+	return
 }

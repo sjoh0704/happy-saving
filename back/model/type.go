@@ -10,7 +10,7 @@ const (
 type Phase string
 
 const (
-	Coupled  Phase = "Coupled"
+	Approved  Phase = "Approved"
 	Awaiting Phase = "Awaiting"
 	Denyed   Phase = "Denyed"
 )

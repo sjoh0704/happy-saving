@@ -8,7 +8,7 @@ import (
 type Post struct {
 	ID        int64     `json:"id"`
 	AuthorID  int64     `json:"user_id"`
-	Author    User      `pg:"rel:has-one"`
+	Author    *User     `pg:"rel:has-one"`
 	Content   string    `json:"content"`
 	ImageURL  string    `json:"image_url"`
 	CreatedAt time.Time `json:"created_at"`

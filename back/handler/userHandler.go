@@ -135,6 +135,11 @@ func CreateUser(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	if len(user.Posts) != 0 {
+		util.SetResponse(res, "cannot send post info", nil, http.StatusBadRequest)
+		return
+	}
+
 	// 동일 mail을 가진 user가 있는지 check
 	count, err := df.DbPool.
 		Model(&model.User{}).
