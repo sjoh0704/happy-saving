@@ -14,6 +14,7 @@ type Couple struct {
 	Phase      Phase     `json:"phase"`
 	CreatedAt  time.Time `json:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at"`
+	Posts      []*Post   `pg:"rel:has-many"`
 }
 
 func (c Couple) String() string {

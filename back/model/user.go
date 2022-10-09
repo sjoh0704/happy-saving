@@ -13,7 +13,6 @@ type User struct {
 	Gender    Gender    `json:"gender"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
-	Posts     []*Post   `pg:"rel:has-many"`
 }
 
 func (u User) String() string {

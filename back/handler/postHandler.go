@@ -1,5 +1,18 @@
 package handler
 
+import (
+	"encoding/json"
+	"net/http"
+	"strconv"
+	"time"
+
+	gmux "github.com/gorilla/mux"
+	log "github.com/sirupsen/logrus"
+	"github.com/sjoh0704/happysaving/model"
+	"github.com/sjoh0704/happysaving/util"
+	df "github.com/sjoh0704/happysaving/util/datafactory"
+)
+
 // import (
 // 	"encoding/json"
 // 	"net/http"
@@ -12,178 +25,165 @@ package handler
 // 	df "github.com/sjoh0704/happysaving/util/datafactory"
 // )
 
-// func GetUsersInfo(res http.ResponseWriter, req *http.Request) {
+// 모든 post 정보 가져오기
+func GetPosts(res http.ResponseWriter, req *http.Request) {
 
-// 	log.Info("get all users info")
-// 	users := []User{}
-// 	err := df.DbPool.Model(&users).Select()
-// 	if err != nil {
-// 		log.Error("getting all users fails: ", err)
-// 		util.SetResponse(res, err.Error(), nil, http.StatusInternalServerError)
-// 		return
-// 	}
+	log.Info("get all posts info")
+	posts := []model.Post{}
+	err := df.DbPool.Model(&posts).Select()
+	if err != nil {
+		log.Error("getting all posts fails: ", err)
+		util.SetResponse(res, err.Error(), nil, http.StatusInternalServerError)
+		return
+	}
 
-// 	util.SetResponse(res, "success", users, http.StatusAccepted)
-// }
+	util.SetResponse(res, "success", posts, http.StatusAccepted)
+}
 
-// func GetUserInfo(res http.ResponseWriter, req *http.Request) {
-// 	vars := gmux.Vars(req)
-// 	id, err := strconv.Atoi(vars["id"])
+func GetPost(res http.ResponseWriter, req *http.Request) {
+	vars := gmux.Vars(req)
+	id, err := strconv.Atoi(vars["id"])
 
-// 	if err != nil {
-// 		log.Error("getting user info fails: ", err)
-// 		util.SetResponse(res, err.Error(), nil, http.StatusBadRequest)
-// 		return
-// 	}
-// 	log.Info("get info for user id: ", id)
+	if err != nil {
+		log.Error("getting post info fails: ", err)
+		util.SetResponse(res, err.Error(), nil, http.StatusBadRequest)
+		return
+	}
+	log.Info("get info for post id: ", id)
 
-// 	user := &User{ID: int64(id)}
-// 	err = df.DbPool.Model(user).WherePK().Select()
+	post := &model.Post{ID: int64(id)}
+	err = df.DbPool.Model(post).WherePK().Select()
 
-// 	if err != nil {
-// 		log.Error("getting user info fails: ", err)
-// 		util.SetResponse(res, err.Error(), nil, http.StatusBadRequest)
-// 		return
-// 	}
-// 	log.Info(user)
-// 	util.SetResponse(res, "success", user, http.StatusOK)
-// }
+	if err != nil {
+		log.Error("getting post info fails: ", err)
+		util.SetResponse(res, err.Error(), nil, http.StatusBadRequest)
+		return
+	}
+	log.Info(post)
+	util.SetResponse(res, "success", post, http.StatusOK)
+}
 
-// func UpdateUserInfo(res http.ResponseWriter, req *http.Request) {
-// 	vars := gmux.Vars(req)
-// 	id, err := strconv.Atoi(vars["id"])
-// 	if err != nil {
-// 		log.Error("getting user info fails: ", err)
-// 		util.SetResponse(res, err.Error(), nil, http.StatusBadRequest)
-// 		return
-// 	}
+func UpdatePost(res http.ResponseWriter, req *http.Request) {
+	vars := gmux.Vars(req)
+	id, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		log.Error("getting post fails: ", err)
+		util.SetResponse(res, err.Error(), nil, http.StatusBadRequest)
+		return
+	}
 
-// 	// user가 있는지 체크
-// 	existUser := &User{
-// 		ID: int64(id),
-// 	}
+	// post가 있는지 체크
+	existPost := &model.Post{
+		ID: int64(id),
+	}
 
-// 	err = df.DbPool.Model(existUser).WherePK().Select()
-// 	if err != nil {
-// 		log.Error("getting user info fails: ", err)
-// 		util.SetResponse(res, err.Error(), nil, http.StatusBadRequest)
-// 		return
-// 	}
+	err = df.DbPool.Model(existPost).WherePK().Select()
+	if err != nil {
+		log.Error("getting post info fails: ", err)
+		util.SetResponse(res, err.Error(), nil, http.StatusBadRequest)
+		return
+	}
 
-// 	// user가 있으면 업데이트
-// 	log.Info("update info for user id: ", id)
+	// post가 있으면 업데이트
+	log.Info("update info for post id: ", id)
 
-// 	newUserInfo := &User{
-// 		ID: int64(id),
-// 	}
+	newPost := &model.Post{
+		ID: int64(id),
+	}
 
-// 	err = json.NewDecoder(req.Body).Decode(newUserInfo)
-// 	if newUserInfo.Name != "" {
-// 		existUser.SetName(newUserInfo.Name)
-// 	}
-// 	if newUserInfo.Mail != "" {
-// 		existUser.SetMail(newUserInfo.Mail)
-// 	}
-// 	if newUserInfo.Password != "" {
-// 		hashedPasswd, err := util.HashPassword(newUserInfo.Password)
-// 		if err != nil {
-// 			log.Error("getting user info fails: ", err)
-// 			util.SetResponse(res, err.Error(), nil, http.StatusInternalServerError)
-// 			return
-// 		}
-// 		existUser.SetPassword(hashedPasswd)
-// 	}
+	err = json.NewDecoder(req.Body).Decode(newPost)
+	// TODO title 변경은 추후
+	// if newPost.Title != "" {
+	// 	existPost.SetName(newPost.GetTitle())
+	// }
+	if newPost.Content != "" {
+		existPost.SetContent(newPost.GetContent())
+	}
+	if newPost.ImageURL != "" {
+		existPost.SetImageURL(newPost.GetImageURL())
+	}
 
-// 	existUser.UpdateTime()
+	existPost.UpdateTime()
 
-// 	_, err = df.DbPool.Model(existUser).WherePK().Update()
+	_, err = df.DbPool.Model(existPost).WherePK().Update()
+	if err != nil {
+		log.Error("updating post fails: ", err)
+		util.SetResponse(res, err.Error(), nil, http.StatusBadRequest)
+		return
+	}
+	util.SetResponse(res, "success", existPost, http.StatusOK)
+}
 
-// 	if err != nil {
-// 		log.Error("updating user fails: ", err)
-// 		util.SetResponse(res, err.Error(), nil, http.StatusBadRequest)
-// 		return
-// 	}
-// 	util.SetResponse(res, "success", existUser, http.StatusOK)
-// }
+// post 생성
+func CreatePost(res http.ResponseWriter, req *http.Request) {
 
-// // 사용자 회원가입
-// func CreateUser(res http.ResponseWriter, req *http.Request) {
+	post := &model.Post{}
+	err := json.NewDecoder(req.Body).Decode(post)
+	if err != nil {
+		util.SetResponse(res, err.Error(), nil, http.StatusBadRequest)
+		return
+	}
 
-// 	user := &User{}
-// 	err := json.NewDecoder(req.Body).Decode(user)
-// 	if err != nil {
-// 		util.SetResponse(res, err.Error(), nil, http.StatusBadRequest)
-// 		return
-// 	}
+	if post.AuthorID == 0 {
+		util.SetResponse(res, "author_id doesn't exist", nil, http.StatusBadRequest)
+		return
+	}
+	if post.CoupleID == 0 {
+		util.SetResponse(res, "couple_id doesn't exist", nil, http.StatusBadRequest)
+		return
+	}
+	if post.Content == "" {
+		util.SetResponse(res, "content doesn't exist", nil, http.StatusBadRequest)
+		return
+	}
+	// 동일 title을 가진 post가 있는지 check
+	count, err := df.DbPool.
+		Model(&model.Post{}).
+		Where("title = ?", post.Title).
+		Count()
 
-// 	if user.Name == "" {
-// 		util.SetResponse(res, "name doesn't exist", nil, http.StatusBadRequest)
-// 		return
-// 	}
-// 	if user.Mail == "" {
-// 		util.SetResponse(res, "mail doesn't exist", nil, http.StatusBadRequest)
-// 		return
-// 	}
-// 	if user.Password == "" {
-// 		util.SetResponse(res, "password doesn't exist", nil, http.StatusBadRequest)
-// 		return
-// 	}
-// 	// 동일 mail을 가진 user가 있는지 check
-// 	count, err := df.DbPool.
-// 		Model(&User{}).
-// 		Where("mail = ?", user.Mail).
-// 		Count()
-	
-// 	if err != nil {
-// 		log.Error("creating user fails: ", err)
-// 		util.SetResponse(res, err.Error(), nil, http.StatusInternalServerError)
-// 		return
-// 	}
-// 	if count >= 1{
-// 		log.Error("user email already exists")
-// 		util.SetResponse(res, "user already exists", nil, http.StatusBadRequest)
-// 		return
-// 	}
+	if err != nil {
+		log.Error("creating post fails: ", err)
+		util.SetResponse(res, err.Error(), nil, http.StatusInternalServerError)
+		return
+	}
+	if count >= 1 {
+		log.Error("post already exists")
+		util.SetResponse(res, "post already exists", nil, http.StatusBadRequest)
+		return
+	}
 
+	log.Info("creating post")
 
-// 	log.Info("creating user")
+	post.CreatedAt = time.Now()
+	post.UpdatedAt = time.Now()
 
-// 	user.CreatedAt = time.Now()
-// 	user.UpdatedAt = time.Now()
-// 	hashedPasswd, err := util.HashPassword(user.Password)
-// 	if err != nil {
-// 		log.Error("creating user fails: ", err)
-// 		util.SetResponse(res, err.Error(), nil, http.StatusInternalServerError)
-// 		return
-// 	}
-// 	user.SetPassword(hashedPasswd)
+	_, err = df.DbPool.Model(post).Insert()
 
-// 	_, err = df.DbPool.Model(user).Insert()
+	if err != nil {
+		log.Error(err)
+	}
+	util.SetResponse(res, "success", post, http.StatusCreated)
+	log.Info("created post: ", post.String())
+}
 
-// 	if err != nil {
-// 		log.Error(err)
-// 	}
-// 	util.SetResponse(res, "success", user, http.StatusCreated)
-// 	log.Info("created user: ", user.String())
-// }
+func DeletePost(res http.ResponseWriter, req *http.Request) {
+	log.Info("Deleting post")
+	vars := gmux.Vars(req)
+	id, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		log.Error("deleting post fails: ", err)
+		util.SetResponse(res, err.Error(), nil, http.StatusBadRequest)
+		return
+	}
+	post := &model.Post{ID: int64(id)}
+	_, err = df.DbPool.Model(post).WherePK().Delete()
 
-// func DeleteUser(res http.ResponseWriter, req *http.Request) {
-// 	log.Info("Deleting user")
-// 	vars := gmux.Vars(req)
-// 	id, err := strconv.Atoi(vars["id"])
-// 	if err != nil {
-// 		log.Error("deleting user fails")
-// 		util.SetResponse(res, err.Error(), nil, http.StatusBadRequest)
-// 		return
-// 	}
-// 	user := &User{ID: int64(id)}
-// 	_, err = df.DbPool.Model(user).WherePK().Delete()
+	if err != nil {
+		log.Error("deleting post fails")
+		util.SetResponse(res, err.Error(), nil, http.StatusInternalServerError)
+		return
+	}
 
-// 	if err != nil {
-// 		log.Error("deleting user fails")
-// 		util.SetResponse(res, err.Error(), nil, http.StatusInternalServerError)
-// 		return
-// 	}
-
-// 	util.SetResponse(res, "success", nil, http.StatusAccepted)
-// }
+	util.SetResponse(res, "success", nil, http.StatusAccepted)
+}

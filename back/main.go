@@ -46,6 +46,7 @@ func register_multiplexer(){
 	mux.HandleFunc("/auth", auth.Auth).Methods("POST")
 	serveUser()
 	serveCouple()
+	servePost()
 }
 
 
@@ -67,11 +68,11 @@ func serveCouple(){
 
 
 func servePost(){
-	mux.HandleFunc(apiVersion + "/users", handler.CreateUser).Methods("POST")
-	mux.HandleFunc(apiVersion + "/users", handler.GetUsersInfo).Methods("GET")
-	mux.HandleFunc(apiVersion + "/users/{id:[0-9]+}", handler.GetUserInfo).Methods("GET")
-	mux.HandleFunc(apiVersion + "/users/{id:[0-9]+}", handler.UpdateUserInfo).Methods("POST")
-	mux.HandleFunc(apiVersion + "/users/{id:[0-9]+}", handler.DeleteUser).Methods("DELETE")
+	mux.HandleFunc(apiVersion + "/posts", handler.CreatePost).Methods("POST")
+	mux.HandleFunc(apiVersion + "/posts", handler.GetPosts).Methods("GET")
+	mux.HandleFunc(apiVersion + "/posts/{id:[0-9]+}", handler.GetPost).Methods("GET")
+	mux.HandleFunc(apiVersion + "/posts/{id:[0-9]+}", handler.UpdatePost).Methods("POST")
+	mux.HandleFunc(apiVersion + "/posts/{id:[0-9]+}", handler.DeletePost).Methods("DELETE")
 }
 
 func ready(res http.ResponseWriter, req *http.Request){
