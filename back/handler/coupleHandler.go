@@ -173,9 +173,9 @@ func ResponseForRequestCouple(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 	// phase 체크
-	if !(cr.Phase == model.Approved || cr.Phase == model.Denyed) {
-		log.Error("phase only can be Approved or Denyed")
-		util.SetResponse(res, "phase only can be Approved or Denyed", nil, http.StatusBadRequest)
+	if !(cr.Phase == model.Approved || cr.Phase == model.Denyed || cr.Phase == model.Awaiting) {
+		log.Error("phase only can be approved, denyed, awaiting")
+		util.SetResponse(res, "phase only can be approved, denyed, awaiting", nil, http.StatusBadRequest)
 		return
 	}
 
@@ -193,11 +193,20 @@ func ResponseForRequestCouple(res http.ResponseWriter, req *http.Request) {
 	
 	// 이미 처리된 Phase라면 패스
 	if existCouple.Phase == model.Approved || existCouple.Phase == model.Denyed {
-		log.Error("phase already is processed")
+		log.Info("phase already is processed")
 		util.SetResponse(res, "phase already is processed", nil, http.StatusBadRequest)
 		return
 	}
 
+	// 보낸 요청이 정확한 올바른 요청인지 체크 
+	if !(existCouple.SenderId == cr.SenderId && existCouple.ReceiverId == cr.ReceiverId){
+		log.Error("receiver or sender id is not matched with request")
+		util.SetResponse(res, "receiver or sender id is not matched with request", nil, http.StatusBadRequest)
+		return
+	}
+
+
+	// 승인 상태일때 
 	if cr.Phase == model.Approved{
 		existCouple.Phase = model.Approved
 		existCouple.UpdatedAt = time.Now()
@@ -209,9 +218,9 @@ func ResponseForRequestCouple(res http.ResponseWriter, req *http.Request) {
 		}
 		log.Info("phase is changed to Approved")
 		util.SetResponse(res, "phase is changed to Approved", existCouple, http.StatusOK)
-		
-
-	}else{
+		return
+	}else if cr.Phase == model.Denyed{
+		// 거절일 때 
 		existCouple.Phase = model.Denyed
 		existCouple.UpdatedAt = time.Now()
 		_, err = df.DbPool.Model(existCouple).WherePK().Update()
@@ -222,6 +231,9 @@ func ResponseForRequestCouple(res http.ResponseWriter, req *http.Request) {
 		}
 		log.Info("phase is changed to Denyed")
 		util.SetResponse(res, "phase is changed to Denyed", existCouple, http.StatusOK)
+		return
 	}
+
+	util.SetResponse(res, "cannot process phase", nil, http.StatusBadRequest)
 	return
 }
