@@ -140,18 +140,17 @@ func CreateUser(res http.ResponseWriter, req *http.Request) {
 		Model(&model.User{}).
 		Where("mail = ?", user.Mail).
 		Count()
-	
+
 	if err != nil {
 		log.Error("creating user fails: ", err)
 		util.SetResponse(res, err.Error(), nil, http.StatusInternalServerError)
 		return
 	}
-	if count >= 1{
+	if count >= 1 {
 		log.Error("user email already exists")
 		util.SetResponse(res, "user already exists", nil, http.StatusBadRequest)
 		return
 	}
-
 
 	log.Info("creating user")
 
@@ -193,4 +192,30 @@ func DeleteUser(res http.ResponseWriter, req *http.Request) {
 	}
 
 	util.SetResponse(res, "success", nil, http.StatusAccepted)
+}
+
+// email을 통해서 가져오기
+func GetUserInfoByEmail(res http.ResponseWriter, req *http.Request) {
+	log.Info("Getting user by email")
+	mail := req.FormValue("mail")
+	if mail == "" {
+		log.Error("mail doensn't exist")
+		util.SetResponse(res, "mail doensn't exist", nil, http.StatusBadRequest)
+		return
+	}
+
+	user := &model.User{}
+
+	err := df.DbPool.
+		Model(user).
+		Where("mail = ?", mail).
+		Select()
+
+	if err != nil {
+		log.Error("getting user fails: ", err)
+		util.SetResponse(res, err.Error(), nil, http.StatusInternalServerError)
+		return
+	}
+
+	util.SetResponse(res, "success", user, http.StatusAccepted)
 }

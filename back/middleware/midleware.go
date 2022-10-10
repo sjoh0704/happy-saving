@@ -2,8 +2,9 @@ package middleware
 
 import (
 	// "log"
-	log "github.com/sirupsen/logrus"
 	"net/http"
+
+	log "github.com/sirupsen/logrus"
 	"github.com/sjoh0704/happysaving/auth"
 	"github.com/sjoh0704/happysaving/util"
 	// "github.com/gorilla/mux"
@@ -14,12 +15,14 @@ func TokenAuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		// user 생성 요청이거나 로그인 요청일 때 token 검사를 하면 안됨
-		if (r.URL.Path == "/apis/v1/users" && r.Method == "POST") || r.URL.Path == "/auth"{
+		if (r.URL.Path == "/apis/v1/users" && r.Method == "POST") ||
+			r.URL.Path == "/auth" ||
+			r.URL.Path == "/ready" {
 			next.ServeHTTP(w, r)
 			return
 		}
 
-		// access token을 받아서 
+		// access token을 받아서
 		token := r.Header.Get("access-token")
 
 		if verify, err := auth.VerifiyJWTToken(token); verify {
