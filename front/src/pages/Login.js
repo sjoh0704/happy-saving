@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import {GetBackURL} from '../util/env'
 import axios from 'axios';
  
 function Login() {
-    const [email, setEmail] = useState('')
+    const [mail, setMail] = useState('')
     const [password, setPassword] = useState('')
  
-    const onChangeEmailHandler = (e) => {
-        setEmail(e.target.value)
+    const onChangeMailHandler = (e) => {
+        setMail(e.target.value)
     }
  
     const onChangePasswordHandler = (e) => {
@@ -16,7 +15,7 @@ function Login() {
  
     const login = () =>{
         let body = {
-            mail: email,
+            mail: mail,
             password: password,
         }
 
@@ -48,7 +47,7 @@ function Login() {
             <h2>Login</h2>
             <div>
                 <label htmlFor='input_id'>EMAIL : </label>
-                <input type='text' name='input_id' value={email} onChange={onChangeEmailHandler} />
+                <input type='text' name='input_id' value={mail} onChange={onChangeMailHandler} />
             </div>
             <div>
                 <label htmlFor='input_pw'>PW : </label>
