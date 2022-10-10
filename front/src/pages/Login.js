@@ -22,12 +22,15 @@ function Login() {
         axios
         .post("/auth", body)
         .then( res => {
-            alert(res)
+
+            alert(res.data.message)
+            console.log(res.data)
+            localStorage.setItem("mail", mail)
         })
         .catch(e => {
-            alert(e)
+            alert(e.response.data.message)
+            console.log(e.response.data.message)
         })
-    
     }
 
     const onClickLoginHandler = () => {
@@ -35,13 +38,6 @@ function Login() {
         login()
     }
 
-
-    // useEffect(() => {
-    //     login()
-    // },
-    // // 페이지 호출 후 처음 한번만 호출될 수 있도록 [] 추가
-    // [])
- 
     return(
         <div>
             <h2>Login</h2>

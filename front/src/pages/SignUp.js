@@ -26,8 +26,6 @@ function SignUp({ history }) {
         .post("/apis/v1/users", userData)
         .then( res => {
             alert("회원가입이 정상적으로 이루어졌습니다.")
-            console.log(res.data)
-            history.replace("/login")
         })
         .catch(e => {
             console.log(e.response.data.message)

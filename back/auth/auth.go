@@ -66,7 +66,8 @@ func Auth(res http.ResponseWriter, req *http.Request) {
 		Name:     "access-token",
 		Value:    accessToken,
 		HttpOnly: true,
-		Expires:  time.Now().Add(time.Hour * 24),
+		// Expires:  time.Now().Add(time.Hour * 24),
+		Expires:  time.Now().Add(time.Second * 60),
 	})
 
 	log.Info("user login success: ", userCheck)

@@ -3,6 +3,7 @@ package middleware
 import (
 	// "log"
 	"net/http"
+	"strings"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/sjoh0704/happysaving/auth"
@@ -22,9 +23,12 @@ func TokenAuthMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		// access token을 받아서
-		token := r.Header.Get("access-token")
-
+		token := ""
+		cookie := r.Header.Get("cookie")
+		if strings.Contains(cookie, "access-token="){
+			token = strings.Split(cookie, "access-token=")[1]
+		}
+		
 		if verify, err := auth.VerifiyJWTToken(token); verify {
 			next.ServeHTTP(w, r)
 		} else {
