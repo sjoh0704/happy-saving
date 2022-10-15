@@ -8,7 +8,7 @@ import SignUp from "./pages/SignUp";
 import PrivateRouter from "./components/PrivateRoute";
 function App() {
   return (
-    <div>
+    <>
       <Page/>
       <PrivateRouter/>
       <Routes>
@@ -18,7 +18,7 @@ function App() {
         <Route exact path="*" element={<NotFound/>}/>
       </Routes>
       
-    </div>
+    </>
   );
 }
 
