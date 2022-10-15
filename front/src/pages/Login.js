@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
- 
+import { useNavigate } from 'react-router';
 function Login() {
     const [mail, setMail] = useState('')
     const [password, setPassword] = useState('')
+    const navigate = useNavigate()
  
     const onChangeMailHandler = (e) => {
         setMail(e.target.value)
@@ -13,24 +14,28 @@ function Login() {
         setPassword(e.target.value)
     }
  
-    const login = () =>{
+    const login = async() =>{
         let body = {
             mail: mail,
             password: password,
         }
 
-        axios
-        .post("/auth", body)
-        .then( res => {
-
+        try {
+            let res = await axios.post("/auth", body)
             alert(res.data.message)
-            console.log(res.data)
-            localStorage.setItem("mail", mail)
-        })
-        .catch(e => {
-            alert(e.response.data.message)
-            console.log(e.response.data.message)
-        })
+
+            let payload = res.data.payload
+            localStorage.setItem("mail", payload.mail)
+            localStorage.setItem("userid", payload.id)
+            localStorage.setItem("name", payload.name)
+            localStorage.setItem("gender", payload.gender)
+            navigate("/")
+            return
+        } catch (err) {
+            alert(err.response.data.message)
+            console.log(err.response.data.message)
+        }
+        
     }
 
     const onClickLoginHandler = () => {

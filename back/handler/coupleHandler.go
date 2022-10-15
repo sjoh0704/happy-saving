@@ -3,6 +3,7 @@ package handler
 import (
 	// "encoding/json"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -26,7 +27,7 @@ func GetCouplesInfo(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	util.SetResponse(res, "success", couples, http.StatusAccepted)
+	util.SetResponse(res, "success", couples, http.StatusOK)
 }
 
 func GetCoupleInfo(res http.ResponseWriter, req *http.Request) {
@@ -184,13 +185,13 @@ func ResponseForRequestCouple(res http.ResponseWriter, req *http.Request) {
 	err = df.DbPool.Model(existCouple).
 		Where("id = ?", id).
 		Select()
-	
+
 	if err != nil {
 		log.Error(err)
 		util.SetResponse(res, err.Error(), nil, http.StatusBadRequest)
 		return
 	}
-	
+
 	// 이미 처리된 Phase라면 패스
 	if existCouple.Phase == model.Approved || existCouple.Phase == model.Denyed {
 		log.Info("phase already is processed")
@@ -198,20 +199,19 @@ func ResponseForRequestCouple(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	// 보낸 요청이 정확한 올바른 요청인지 체크 
-	if !(existCouple.SenderId == cr.SenderId && existCouple.ReceiverId == cr.ReceiverId){
+	// 보낸 요청이 정확한 올바른 요청인지 체크
+	if !(existCouple.SenderId == cr.SenderId && existCouple.ReceiverId == cr.ReceiverId) {
 		log.Error("receiver or sender id is not matched with request")
 		util.SetResponse(res, "receiver or sender id is not matched with request", nil, http.StatusBadRequest)
 		return
 	}
 
-
-	// 승인 상태일때 
-	if cr.Phase == model.Approved{
+	// 승인 상태일때
+	if cr.Phase == model.Approved {
 		existCouple.Phase = model.Approved
 		existCouple.UpdatedAt = time.Now()
 		_, err = df.DbPool.Model(existCouple).WherePK().Update()
-		if err != nil{
+		if err != nil {
 			log.Error(err)
 			util.SetResponse(res, err.Error(), nil, http.StatusInternalServerError)
 			return
@@ -219,12 +219,12 @@ func ResponseForRequestCouple(res http.ResponseWriter, req *http.Request) {
 		log.Info("phase is changed to Approved")
 		util.SetResponse(res, "phase is changed to Approved", existCouple, http.StatusOK)
 		return
-	}else if cr.Phase == model.Denyed{
-		// 거절일 때 
+	} else if cr.Phase == model.Denyed {
+		// 거절일 때
 		existCouple.Phase = model.Denyed
 		existCouple.UpdatedAt = time.Now()
 		_, err = df.DbPool.Model(existCouple).WherePK().Update()
-		if err != nil{
+		if err != nil {
 			log.Error(err)
 			util.SetResponse(res, err.Error(), nil, http.StatusInternalServerError)
 			return
@@ -236,4 +236,46 @@ func ResponseForRequestCouple(res http.ResponseWriter, req *http.Request) {
 
 	util.SetResponse(res, "cannot process phase", nil, http.StatusBadRequest)
 	return
+}
+
+// email을 통해서 가져오기
+func GetCoupleInfoByUserId(res http.ResponseWriter, req *http.Request) {
+	log.Info("Getting couple info by email")
+	userId, err := strconv.Atoi(req.FormValue("userid"))
+	if err != nil {
+		log.Error("cannot parse user id")
+		util.SetResponse(res, "cannot parse user id", nil, http.StatusInternalServerError)
+		return
+	}
+	if userId == 0 {
+		log.Error("user id doesn't exist")
+		util.SetResponse(res, "user id doesn't exist", nil, http.StatusBadRequest)
+		return
+	}
+
+	log.Info("Getting couple info by user id: ", userId)
+
+	couple := &model.Couple{}
+
+	count, err := df.DbPool.
+		Model(couple).
+		Where("sender_id = ?", userId).
+		WhereOr("receiver_id = ?", userId).
+		Limit(1). // 반드시 하나만 있어야하긴 함
+		SelectAndCount()
+
+	// 커플이 존재하지 않는 경우 
+	if count == 0 {
+		log.Info(fmt.Sprintf("couple by userid: %d doesn't exist", userId))
+		util.SetResponse(res, fmt.Sprintf("couple by userid: %d doesn't exist", userId), nil, http.StatusNoContent)
+		return
+	}
+
+	if err != nil {
+		log.Error("getting couple info fails: ", err)
+		util.SetResponse(res, err.Error(), nil, http.StatusInternalServerError)
+		return
+	}
+
+	util.SetResponse(res, "success", couple, http.StatusOK)
 }

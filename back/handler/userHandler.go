@@ -24,7 +24,7 @@ func GetUsersInfo(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	util.SetResponse(res, "success", users, http.StatusAccepted)
+	util.SetResponse(res, "success", users, http.StatusOK)
 }
 
 func GetUserInfo(res http.ResponseWriter, req *http.Request) {
@@ -191,7 +191,7 @@ func DeleteUser(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	util.SetResponse(res, "success", nil, http.StatusAccepted)
+	util.SetResponse(res, "success", nil, http.StatusOK)
 }
 
 // email을 통해서 가져오기
@@ -217,5 +217,5 @@ func GetUserInfoByEmail(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	util.SetResponse(res, "success", user, http.StatusAccepted)
+	util.SetResponse(res, "success", user, http.StatusOK)
 }

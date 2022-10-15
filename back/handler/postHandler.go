@@ -37,7 +37,7 @@ func GetPosts(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	util.SetResponse(res, "success", posts, http.StatusAccepted)
+	util.SetResponse(res, "success", posts, http.StatusOK)
 }
 
 func GetPost(res http.ResponseWriter, req *http.Request) {
@@ -185,5 +185,5 @@ func DeletePost(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	util.SetResponse(res, "success", nil, http.StatusAccepted)
+	util.SetResponse(res, "success", nil, http.StatusOK)
 }

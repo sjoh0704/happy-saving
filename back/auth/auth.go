@@ -32,11 +32,11 @@ func Auth(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	userCheck := &model.User{}
+	user := &model.User{}
 
 	// user mail이 있는지 check
-	userExist, err := df.DbPool.
-		Model(userCheck).
+	userCount, err := df.DbPool.
+		Model(user).
 		Where("mail = ?", authUser.Mail).
 		SelectAndCount()
 
@@ -44,20 +44,20 @@ func Auth(res http.ResponseWriter, req *http.Request) {
 		log.Error("auth error: ", err.Error())
 		util.SetResponse(res, err.Error(), nil, http.StatusInternalServerError)
 		return
-	} else if userExist == 0 { // user가 없다면
+	} else if userCount == 0 { // user가 없다면
 		util.SetResponse(res, "email or password is not correct", nil, http.StatusBadRequest)
 		return
 	}
 
-	if !util.CheckPasswordHash(userCheck.Password, authUser.Password) { // login 실패
-		log.Info("user login fails: ", userCheck)
+	if !util.CheckPasswordHash(user.Password, authUser.Password) { // login 실패
+		log.Info("user login fails: ", user)
 		util.SetResponse(res, "email or password is not correct", nil, http.StatusBadRequest)
 		return
 
 	}
 	accessToken, err := CreateJWT(authUser.Mail)
 	if err != nil {
-		log.Info("user login fails: ", userCheck)
+		log.Info("user login fails: ", user)
 		util.SetResponse(res, err.Error(), nil, http.StatusBadRequest)
 		return
 	}
@@ -67,11 +67,11 @@ func Auth(res http.ResponseWriter, req *http.Request) {
 		Value:    accessToken,
 		HttpOnly: true,
 		// Expires:  time.Now().Add(time.Hour * 24),
-		Expires:  time.Now().Add(time.Second * 60),
+		Expires:  time.Now().Add(time.Second * 3600),
 	})
 
-	log.Info("user login success: ", userCheck)
-	util.SetResponse(res, "login success", nil, http.StatusOK)
+	log.Info("user login success: ", user)
+	util.SetResponse(res, "login success", user, http.StatusOK)
 }
 
 

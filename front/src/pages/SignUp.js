@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router';
  
-function SignUp({ history }) {
+function SignUp() {
+    const navigate = useNavigate()
     const [userData, setUserData] = useState({
         name: "",
         mail: "",
@@ -26,6 +28,7 @@ function SignUp({ history }) {
         .post("/apis/v1/users", userData)
         .then( res => {
             alert("회원가입이 정상적으로 이루어졌습니다.")
+            navigate('/login')
         })
         .catch(e => {
             console.log(e.response.data.message)

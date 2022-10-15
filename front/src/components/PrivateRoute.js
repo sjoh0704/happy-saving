@@ -9,7 +9,8 @@ const PrivateRouter = () =>{
     
     const checkLogined = async (mail) =>{
 
-        if (window.location.pathname == "/login"){
+        if (window.location.pathname == "/login" || 
+            window.location.pathname == "/signup"){
             return
         }
 
@@ -20,7 +21,9 @@ const PrivateRouter = () =>{
     }
 
     const checkCookie = async (mail) => {
-        if (window.location.pathname == "/login" || mail == null){
+        if (window.location.pathname == "/login" 
+            || window.location.pathname == "/signup"
+            || mail == null){
             return
         }
 

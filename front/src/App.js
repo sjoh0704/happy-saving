@@ -6,6 +6,8 @@ import NotFound from "./pages/NotFound"
 import Page from "./components/Page";
 import SignUp from "./pages/SignUp";
 import PrivateRouter from "./components/PrivateRoute";
+import MakeCouple from "./pages/MakeCouple";
+
 function App() {
   return (
     <>
@@ -15,6 +17,7 @@ function App() {
         <Route exact path="/" element={<Home/>} />
         <Route exact path="/login" element={<Login/>}/>
         <Route exact path="/signup" element={<SignUp/>}/>
+        <Route exact path="/couple/make" element={<MakeCouple/>}/>
         <Route exact path="*" element={<NotFound/>}/>
       </Routes>
       
