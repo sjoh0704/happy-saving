@@ -9,7 +9,7 @@ type Post struct {
 	ID        int64     `json:"id"`
 	AuthorID  int64     `json:"author_id"`
 	CoupleID  int64     `json:"couple_id"`
-	Couple    *Couple   `pg:"rel:has-one"`
+	Couple    *Couple   `json:"couple" pg:"rel:has-one"`
 	Title     string	`json:"title"`
 	Content   string    `json:"content"`
 	ImageURL  string    `json:"image_url"`

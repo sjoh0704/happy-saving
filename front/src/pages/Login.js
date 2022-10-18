@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import { useNavigate } from 'react-router'
+import { Button, Col, Container, Form, Row } from 'react-bootstrap'
 function Login() {
     const [mail, setMail] = useState('')
     const [password, setPassword] = useState('')
@@ -43,32 +44,58 @@ function Login() {
     }
 
     return (
-        <div>
-            <h2>Login</h2>
-            <div>
-                <label htmlFor="input_id">EMAIL : </label>
-                <input
-                    type="text"
-                    name="input_id"
-                    value={mail}
-                    onChange={onChangeMailHandler}
-                />
-            </div>
-            <div>
-                <label htmlFor="input_pw">PW : </label>
-                <input
-                    type="password"
-                    name="input_pw"
-                    value={password}
-                    onChange={onChangePasswordHandler}
-                />
-            </div>
-            <div>
-                <button type="button" onClick={onClickLoginHandler}>
-                    Login
-                </button>
-            </div>
-        </div>
+        <Container>
+            <Row>
+                <Col>
+                    <h2>Login</h2>
+                </Col>
+            </Row>
+
+            <Row>
+                <Col>
+                    <Form>
+                        <Form.Group className="mb-3" controlId="formEmail">
+                            <Form.Label>Email address</Form.Label>
+                            <Form.Control
+                                type="email"
+                                placeholder="Enter email"
+                                name="mail"
+                                value={mail}
+                                onChange={onChangeMailHandler}
+                            />
+                            <Form.Text className="text-muted">
+                                We'll never share your email with anyone else.
+                            </Form.Text>
+                        </Form.Group>
+                    </Form>
+                </Col>
+            </Row>
+            <Row>
+                <Col>
+                    <Form.Group className="mb-3" controlId="formPassword">
+                        <Form.Label>Password</Form.Label>
+                        <Form.Control
+                            type="password"
+                            placeholder="Password"
+                            name="password"
+                            value={password}
+                            onChange={onChangePasswordHandler}
+                        />
+                    </Form.Group>
+                </Col>
+            </Row>
+            <Row>
+                <Col>
+                    <Button
+                        variant="primary"
+                        type="submit"
+                        onClick={onClickLoginHandler}
+                    >
+                        Login
+                    </Button>
+                </Col>
+            </Row>
+        </Container>
     )
 }
 

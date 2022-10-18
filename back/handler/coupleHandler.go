@@ -168,11 +168,11 @@ func ResponseForRequestCouple(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 	// 클라이언트는 리시버 id로 보내야 함
-	if cr.ReceiverId == 0 {
-		log.Error("doesn't send receiver id")
-		util.SetResponse(res, "doesn't send receiver id", nil, http.StatusBadRequest)
-		return
-	}
+	// if cr.ReceiverId == 0 {
+	// 	log.Error("doesn't send receiver id")
+	// 	util.SetResponse(res, "doesn't send receiver id", nil, http.StatusBadRequest)
+	// 	return
+	// }
 	// phase 체크
 	if !(cr.Phase == model.Approved || cr.Phase == model.Denyed || cr.Phase == model.Awaiting) {
 		log.Error("phase only can be approved, denyed, awaiting")
@@ -200,11 +200,11 @@ func ResponseForRequestCouple(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// 보낸 요청이 정확한 올바른 요청인지 체크
-	if !(existCouple.SenderId == cr.SenderId && existCouple.ReceiverId == cr.ReceiverId) {
-		log.Error("receiver or sender id is not matched with request")
-		util.SetResponse(res, "receiver or sender id is not matched with request", nil, http.StatusBadRequest)
-		return
-	}
+	// if !(existCouple.SenderId == cr.SenderId && existCouple.ReceiverId == cr.ReceiverId) {
+	// 	log.Error("receiver or sender id is not matched with request")
+	// 	util.SetResponse(res, "receiver or sender id is not matched with request", nil, http.StatusBadRequest)
+	// 	return
+	// }
 
 	// 승인 상태일때
 	if cr.Phase == model.Approved {
@@ -238,9 +238,9 @@ func ResponseForRequestCouple(res http.ResponseWriter, req *http.Request) {
 	return
 }
 
-// email을 통해서 가져오기
+// user id을 통해서 가져오기
 func GetCoupleInfoByUserId(res http.ResponseWriter, req *http.Request) {
-	log.Info("Getting couple info by email")
+	log.Info("Getting couple info by user id")
 	userId, err := strconv.Atoi(req.FormValue("userid"))
 	if err != nil {
 		log.Error("cannot parse user id")
@@ -259,12 +259,15 @@ func GetCoupleInfoByUserId(res http.ResponseWriter, req *http.Request) {
 
 	count, err := df.DbPool.
 		Model(couple).
+		Relation("Receiver").
+		Relation("Sender").
 		Where("sender_id = ?", userId).
 		WhereOr("receiver_id = ?", userId).
-		Limit(1). // 반드시 하나만 있어야하긴 함
+		Order("created_at DESC").
+		Limit(1).
 		SelectAndCount()
 
-	// 커플이 존재하지 않는 경우 
+	// 커플이 존재하지 않는 경우
 	if count == 0 {
 		log.Info(fmt.Sprintf("couple by userid: %d doesn't exist", userId))
 		util.SetResponse(res, fmt.Sprintf("couple by userid: %d doesn't exist", userId), nil, http.StatusNoContent)
@@ -278,4 +281,47 @@ func GetCoupleInfoByUserId(res http.ResponseWriter, req *http.Request) {
 	}
 
 	util.SetResponse(res, "success", couple, http.StatusOK)
+}
+
+// user id을 통해서 모든 송신자 couple request 가져오기
+func GetAllCouplesReqByUserId(res http.ResponseWriter, req *http.Request) {
+	log.Info("Getting all couples request by user id")
+	userId, err := strconv.Atoi(req.FormValue("userid"))
+	if err != nil {
+		log.Error("cannot parse user id")
+		util.SetResponse(res, "cannot parse user id", nil, http.StatusInternalServerError)
+		return
+	}
+	if userId == 0 {
+		log.Error("user id doesn't exist")
+		util.SetResponse(res, "user id doesn't exist", nil, http.StatusBadRequest)
+		return
+	}
+
+	log.Info("Getting all couple req by receiver id: ", userId)
+
+	var couples []model.Couple
+
+	count, err := df.DbPool.
+		Model(&couples).
+		Relation("Sender").
+		Where("receiver_id = ?", userId).
+		Where("phase = ? ", "awaiting").
+		Order("created_at DESC").
+		SelectAndCount()
+
+	// 커플이 존재하지 않는 경우
+	if count == 0 {
+		log.Info(fmt.Sprintf("couple by receiverid: %d doesn't exist", userId))
+		util.SetResponse(res, fmt.Sprintf("couple by receiverid: %d doesn't exist", userId), nil, http.StatusNoContent)
+		return
+	}
+
+	if err != nil {
+		log.Error("getting all couples request fails: ", err)
+		util.SetResponse(res, err.Error(), nil, http.StatusInternalServerError)
+		return
+	}
+
+	util.SetResponse(res, "success", couples, http.StatusOK)
 }

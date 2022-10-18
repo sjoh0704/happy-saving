@@ -61,6 +61,7 @@ func serveUser() {
 
 func serveCouple() {
 	mux.HandleFunc(apiVersion+"/couples", handler.GetCoupleInfoByUserId).Queries("userid", "{userid}").Methods("GET")
+	mux.HandleFunc(apiVersion+"/couples/senders", handler.GetAllCouplesReqByUserId).Queries("userid", "{userid}").Methods("GET")	
 	mux.HandleFunc(apiVersion+"/couples", handler.GetCouplesInfo).Methods("GET")
 	mux.HandleFunc(apiVersion+"/couples/{id:[0-9]+}", handler.GetCoupleInfo).Methods("GET")
 	mux.HandleFunc(apiVersion+"/couples", handler.RequestCouple).Methods("POST")

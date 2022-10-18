@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import { useNavigate } from 'react-router'
-
+import { Button, Col, Container, Form, Row } from 'react-bootstrap'
 function SignUp() {
     const navigate = useNavigate()
     const [userData, setUserData] = useState({
@@ -46,50 +46,93 @@ function SignUp() {
     // [])
 
     return (
-        <div>
-            <h2>Sign Up</h2>
-            <div>
-                <label htmlFor="input_id">EMAIL : </label>
-                <input
-                    type="text"
-                    name="mail"
-                    value={mail}
-                    onChange={onChangeUserHandler}
-                />
-            </div>
-            <div>
-                <label htmlFor="input_id">NAME : </label>
-                <input
-                    type="text"
-                    name="name"
-                    value={name}
-                    onChange={onChangeUserHandler}
-                />
-            </div>
-            <div>
-                <label htmlFor="input_pw">PW : </label>
-                <input
-                    type="password"
-                    name="password"
-                    value={password}
-                    onChange={onChangeUserHandler}
-                />
-            </div>
-            <div>
-                <label htmlFor="input_id">GENDER(male/female) : </label>
-                <input
-                    type="text"
-                    name="gender"
-                    value={gender}
-                    onChange={onChangeUserHandler}
-                />
-            </div>
-            <div>
-                <button type="button" onClick={onClickSignUpHandler}>
-                    OK
-                </button>
-            </div>
-        </div>
+        <Container>
+            <Row>
+                <Col>
+                    <h2>Sign Up</h2>
+                </Col>
+            </Row>
+            <br/>
+            <Row>
+                <Col>
+                    <Form>
+                        <Form.Group className="mb-3" controlId="formEmail">
+                            <Form.Label>Email address</Form.Label>
+                            <Form.Control
+                                type="email"
+                                placeholder="Enter email"
+                                name="mail"
+                                value={mail}
+                                onChange={onChangeUserHandler}
+                            />
+                            <Form.Text className="text-muted">
+                                We'll never share your email with anyone else.
+                            </Form.Text>
+                        </Form.Group>
+                    </Form>
+                </Col>
+            </Row>
+            <Row>
+                <Col>
+                    <Form>
+                        <Form.Group className="mb-3" controlId="formName">
+                            <Form.Label>User Name</Form.Label>
+                            <Form.Control
+                                type="email"
+                                placeholder="Enter name"
+                                name="name"
+                                value={name}
+                                onChange={onChangeUserHandler}
+                            />
+                            <Form.Text className="text-muted">
+                                사용할 애칭이나 이름을 적어주세요
+                            </Form.Text>
+                        </Form.Group>
+                    </Form>
+                </Col>
+            </Row>
+            <Row>
+                <Col>
+                    <Form.Group className="mb-3" controlId="formPassword">
+                        <Form.Label>Password</Form.Label>
+                        <Form.Control
+                            type="password"
+                            placeholder="Password"
+                            name="password"
+                            value={password}
+                            onChange={onChangeUserHandler}
+                        />
+                    </Form.Group>
+                </Col>
+            </Row>
+            <Row>
+                <Col>
+                    <Form>
+                        <Form.Group className="mb-3" controlId="formGender">
+                            <Form.Label>성별(male/female)</Form.Label>
+                            <Form.Control
+                                type="email"
+                                placeholder="male"
+                                name="gender"
+                                value={gender}
+                                onChange={onChangeUserHandler}
+                            />
+                        </Form.Group>
+                    </Form>
+                </Col>
+            </Row>
+            <Row>
+                <Col>
+                    <Button
+                        variant="primary"
+                        type="submit"
+                        onClick={onClickSignUpHandler}
+                    >
+                        OK
+                    </Button>
+                </Col>
+            </Row>
+        </Container>
     )
 }
 

@@ -8,13 +8,13 @@ import (
 type Couple struct {
 	ID         int64     `json:"id"`
 	SenderId   int64     `json:"send_id"` //SenderId와 Sender가 같은 포멧으로 있어야 함
-	Sender     *User     `pg:"rel:has-one"`
+	Sender     *User     `json:"sender" pg:"rel:has-one"`
 	ReceiverId int64     `json:"recv_id"`
-	Receiver   *User     `pg:"rel:has-one"`
+	Receiver   *User     `json:"receiver" pg:"rel:has-one"`
 	Phase      Phase     `json:"phase"`
 	CreatedAt  time.Time `json:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at"`
-	Posts      []*Post   `pg:"rel:has-many"`
+	Posts      []*Post   `json:"posts" pg:"rel:has-many"`
 }
 
 func (c Couple) String() string {

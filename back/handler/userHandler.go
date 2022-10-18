@@ -206,10 +206,16 @@ func GetUserInfoByEmail(res http.ResponseWriter, req *http.Request) {
 
 	user := &model.User{}
 
-	err := df.DbPool.
+	count, err := df.DbPool.
 		Model(user).
 		Where("mail = ?", mail).
-		Select()
+		SelectAndCount()
+
+	if count == 0 {
+		log.Info("user doesn't exist")
+		util.SetResponse(res, "user doesn't exist", nil, http.StatusNoContent)
+		return
+	}
 
 	if err != nil {
 		log.Error("getting user fails: ", err)
