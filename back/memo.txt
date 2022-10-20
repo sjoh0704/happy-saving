@@ -3,3 +3,6 @@ kubectl exec -it postgres -- psql -U postgres
 
 table에 들어가는 colume명은 json으로 지정한 값이 들어가는 것이 아니라
 SenderId라는 속성을 만들었을 때 sender_id로 변경되어 들어간다. 
+
+
+phase를 쿼리파람으로 줘서 테스트 

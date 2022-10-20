@@ -2,9 +2,11 @@ import React from 'react'
 import { Button, Card } from 'react-bootstrap'
 
 const UserCard = (props) => {
-    let buttonValue = props.buttonValue
     let user = props.user
-    let onClickHandler = props.onClick
+    let buttonValueLeft = props.buttonValueLeft
+    let onClickHandlerLeft = props.onClickLeft
+    let buttonValueRight = props.buttonValueRight
+    let onClickHandlerRight = props.onClickRight
 
     return (
         <>
@@ -17,16 +19,25 @@ const UserCard = (props) => {
                     <Card.Text>
                         성별: {user.gender == 'female' ? '여자' : '남자'}
                     </Card.Text>
-                    <Card.Text>
-                        가입일: {user.created_at}
-                    </Card.Text>
+                    <Card.Text>가입일: {user.created_at}</Card.Text>
                     <Button
                         variant="primary"
                         type="submit"
-                        onClick={onClickHandler}
+                        onClick={onClickHandlerLeft}
                     >
-                        {buttonValue}
-                    </Button>
+                        {buttonValueLeft}
+                    </Button>{' '}
+                    {buttonValueRight == null ? (
+                        <></>
+                    ) : (
+                        <Button
+                            variant="primary"
+                            type="submit"
+                            onClick={onClickHandlerRight}
+                        >
+                            {buttonValueRight}
+                        </Button>
+                    )}
                     {/* <Card.Link href="#">Card Link</Card.Link>
                                 <Card.Link href="#">Another Link</Card.Link> */}
                 </Card.Body>

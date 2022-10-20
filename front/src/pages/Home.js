@@ -10,20 +10,24 @@ const Home = () => {
     const [receiverCoupleInfo, setReceiverCoupleInfo] = useState(null)
 
     console.log(userId)
-    const getCouplebyUserId = async (useId) => {
+    const getCouplebySenderId = async (useId) => {
         if (userId == null) {
             return
         }
         try {
             let res = await axios.get('/apis/v1/couples?userid=' + userId)
+            if (res.status == 204) {
+                setSenderCoupleInfo({})
+                return
+            }
             let payload = res.data.payload
             setSenderCoupleInfo(payload)
-            console.log(payload)
         } catch (err) {
             console.log(err)
         }
     }
 
+    // receiver id를 통해서 sender id를 조회 
     const getAllCoupleRequestByRecvId = async (useId) => {
         if (userId == null) {
             return
@@ -33,6 +37,7 @@ const Home = () => {
                 '/apis/v1/couples/senders?userid=' + useId
             )
             if (res.status == 204) {
+                setReceiverCoupleInfo([])
                 return
             }
             let payload = res.data.payload
@@ -43,7 +48,7 @@ const Home = () => {
     }
 
     useEffect(() => {
-        getCouplebyUserId(userId)
+        getCouplebySenderId(userId)
         getAllCoupleRequestByRecvId(userId)
     }, [])
 

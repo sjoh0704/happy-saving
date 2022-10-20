@@ -238,9 +238,9 @@ func ResponseForRequestCouple(res http.ResponseWriter, req *http.Request) {
 	return
 }
 
-// user id을 통해서 가져오기
+// sender id을 통해서 가져오기
 func GetCoupleInfoByUserId(res http.ResponseWriter, req *http.Request) {
-	log.Info("Getting couple info by user id")
+	log.Info("Getting couple info by sender id")
 	userId, err := strconv.Atoi(req.FormValue("userid"))
 	if err != nil {
 		log.Error("cannot parse user id")
@@ -253,7 +253,7 @@ func GetCoupleInfoByUserId(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	log.Info("Getting couple info by user id: ", userId)
+	log.Info("Getting couple info by sender id: ", userId)
 
 	couple := &model.Couple{}
 
@@ -262,7 +262,7 @@ func GetCoupleInfoByUserId(res http.ResponseWriter, req *http.Request) {
 		Relation("Receiver").
 		Relation("Sender").
 		Where("sender_id = ?", userId).
-		WhereOr("receiver_id = ?", userId).
+		Where("phase = ? ", "awaiting").
 		Order("created_at DESC").
 		Limit(1).
 		SelectAndCount()
@@ -324,4 +324,63 @@ func GetAllCouplesReqByUserId(res http.ResponseWriter, req *http.Request) {
 	}
 
 	util.SetResponse(res, "success", couples, http.StatusOK)
+}
+
+// sender id을 통해서 phase와 일치하는 요청 가져오기
+func GetCoupleInfoBySenderId(res http.ResponseWriter, req *http.Request) {
+	log.Info("Getting approved couple info by sender id")
+	userId, err := strconv.Atoi(req.FormValue("userid"))
+	if err != nil {
+		log.Error("cannot parse user id")
+		util.SetResponse(res, "cannot parse user id", nil, http.StatusInternalServerError)
+		return
+	}
+	if userId == 0 {
+		log.Error("user id doesn't exist")
+		util.SetResponse(res, "user id doesn't exist", nil, http.StatusBadRequest)
+		return
+	}
+
+	phase := req.FormValue("phase")
+
+	if phase == "" {
+		log.Error("user id doesn't exist")
+		util.SetResponse(res, "user id doesn't exist", nil, http.StatusBadRequest)
+		return
+	}
+
+	// if phase != "approved" || phase != "awaiting" || phase != "denyed" {
+	// 	log.Error("phase doesn't exist")
+	// 	util.SetResponse(res, "phase doesn't exist", nil, http.StatusBadRequest)
+	// 	return
+	// }
+
+	log.Info("Getting approved couple info by sender id: ", userId)
+
+	couple := &model.Couple{}
+
+	count, err := df.DbPool.
+		Model(couple).
+		Relation("Receiver").
+		Relation("Sender").
+		Where("sender_id = ?", userId).
+		Where("phase = ? ", phase).
+		Order("created_at DESC").
+		Limit(1).
+		SelectAndCount()
+
+	// 커플이 존재하지 않는 경우
+	if count == 0 {
+		log.Info(fmt.Sprintf("couple by userid: %d doesn't exist", userId))
+		util.SetResponse(res, fmt.Sprintf("couple by userid: %d doesn't exist", userId), nil, http.StatusNoContent)
+		return
+	}
+
+	if err != nil {
+		log.Error("getting couple info fails: ", err)
+		util.SetResponse(res, err.Error(), nil, http.StatusInternalServerError)
+		return
+	}
+
+	util.SetResponse(res, "success", couple, http.StatusOK)
 }

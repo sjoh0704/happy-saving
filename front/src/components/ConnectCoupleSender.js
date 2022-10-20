@@ -25,7 +25,8 @@ const ConnectCoupleSender = (props) => {
         }
     }
 
-    if (coupleInfo == null) {
+    // 빈 객체일 때 
+    if (JSON.stringify(coupleInfo) == JSON.stringify({})) {
         return (
             <Row>
                 <Col>
@@ -43,7 +44,8 @@ const ConnectCoupleSender = (props) => {
             <Row>
                 <Col>
                     <p>
-                        {coupleInfo.sender.name} 님에게 커플 요청을 보냈습니다.
+                        {coupleInfo.receiver.name} 님에게 커플 요청을
+                        보냈습니다.
                     </p>
                 </Col>
                 <Col>

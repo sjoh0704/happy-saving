@@ -124,8 +124,8 @@ const MakeCouple = () => {
                         <div></div>
                     ) : (
                         <UserCard
-                            buttonValue="커플 신청하기"
-                            onClick={onClickMakeCoupleHandler}
+                            buttonValueLeft="커플 신청하기"
+                            onClickLeft={onClickMakeCoupleHandler}
                             user={candidate}
                         />
                     )}
