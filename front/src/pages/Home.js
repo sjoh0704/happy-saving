@@ -4,6 +4,7 @@ import { Form, Container, Button, Row, Col, Alert } from 'react-bootstrap'
 import ConnectCoupleSender from '../components/ConnectCoupleSender'
 import ConnectCoupleReceiver from '../components/ConnectCoupleReceiver'
 import ApprovedCouple from '../components/ApprovedCouple'
+import Loading from '../components/Loading'
 const Home = () => {
     const userId = localStorage.getItem('userid')
     const name = localStorage.getItem('name')
@@ -59,10 +60,13 @@ const Home = () => {
                 '/apis/v1/couples?phase=approved&userid=' + userId
             )
             if (res.status != 204) {
+                // 커플 연결이 성사된 상태
                 let payload = res.data.payload
+
                 setApprovedCoupleInfo(payload)
                 setSenderCoupleInfo({})
                 setReceiverCoupleInfo({})
+                localStorage.setItem('couple_id', payload.id)
                 return
             }
             setApprovedCoupleInfo({})
@@ -86,7 +90,7 @@ const Home = () => {
             <Container>
                 <Row>
                     <Col>
-                        <h1>Loading</h1>
+                        <Loading />
                     </Col>
                 </Row>
             </Container>
@@ -96,10 +100,10 @@ const Home = () => {
             <Container>
                 <Row>
                     <Col
-                        sm={{ span: 6, offset: 2 }}
-                        lg={{ span: 4, offset: 3 }}
+                    // sm={{ span: 6, offset: 2 }}
+                    // lg={{ span: 4, offset: 3 }}
                     >
-                        <h3>안녕하세요! {name} 님!</h3>
+                        {/* <h3>안녕하세요! {name} 님!</h3> */}
                     </Col>
                 </Row>
 

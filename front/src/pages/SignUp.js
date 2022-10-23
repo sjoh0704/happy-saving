@@ -8,10 +8,11 @@ function SignUp() {
         name: '',
         mail: '',
         password: '',
+        password_check: '',
         gender: ''
     })
 
-    const { name, mail, password, gender } = userData
+    const { name, mail, password, password_check, gender } = userData
 
     const onChangeUserHandler = (e) => {
         const { name, value } = e.target
@@ -21,17 +22,19 @@ function SignUp() {
         })
     }
 
-    const signUp = () => {
-        axios
-            .post('/apis/v1/users', userData)
-            .then((res) => {
-                alert('회원가입이 정상적으로 이루어졌습니다.')
-                navigate('/login')
-            })
-            .catch((e) => {
-                console.log(e.response.data.message)
-                alert(e.response.data.message)
-            })
+    const signUp = async () => {
+        try {
+            if (password != password_check) {
+                alert('비밀번호가 일치하지 않습니다.')
+                return
+            }
+            await axios.post('/apis/v1/users', userData)
+            alert('회원가입이 정상적으로 이루어졌습니다.')
+            navigate('/login')
+        } catch (err) {
+            console.log(err.response.data.message)
+            alert(err.response.data.message)
+        }
     }
 
     const onClickSignUpHandler = () => {
@@ -52,7 +55,7 @@ function SignUp() {
                     <h2>Sign Up</h2>
                 </Col>
             </Row>
-            <br/>
+            <br />
             <Row>
                 <Col>
                     <Form>
@@ -94,12 +97,26 @@ function SignUp() {
             <Row>
                 <Col>
                     <Form.Group className="mb-3" controlId="formPassword">
-                        <Form.Label>Password</Form.Label>
+                        <Form.Label>비밀번호</Form.Label>
                         <Form.Control
                             type="password"
                             placeholder="Password"
                             name="password"
                             value={password}
+                            onChange={onChangeUserHandler}
+                        />
+                    </Form.Group>
+                </Col>
+            </Row>
+            <Row>
+                <Col>
+                    <Form.Group className="mb-3" controlId="formPasswordCheck">
+                        <Form.Label>비밀번호 확인</Form.Label>
+                        <Form.Control
+                            type="password"
+                            placeholder="Password check"
+                            name="password_check"
+                            value={password_check}
                             onChange={onChangeUserHandler}
                         />
                     </Form.Group>

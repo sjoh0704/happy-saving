@@ -1,5 +1,6 @@
 import React from 'react'
 import { Button, Card } from 'react-bootstrap'
+import { changeTimeFormat } from '../util/util'
 
 const UserCard = (props) => {
     let user = props.user
@@ -19,7 +20,7 @@ const UserCard = (props) => {
                     <Card.Text>
                         성별: {user.gender == 'female' ? '여자' : '남자'}
                     </Card.Text>
-                    <Card.Text>가입일: {user.created_at}</Card.Text>
+                    <Card.Text>가입일: {changeTimeFormat(user.created_at)}</Card.Text>
                     <Button
                         variant="primary"
                         type="submit"
