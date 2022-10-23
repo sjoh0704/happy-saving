@@ -3,19 +3,22 @@ import axios from 'axios'
 import { Form, Container, Button, Row, Col, Alert } from 'react-bootstrap'
 import ConnectCoupleSender from '../components/ConnectCoupleSender'
 import ConnectCoupleReceiver from '../components/ConnectCoupleReceiver'
+import ApprovedCouple from '../components/ApprovedCouple'
 const Home = () => {
     const userId = localStorage.getItem('userid')
     const name = localStorage.getItem('name')
+    const [approvedCoupleInfo, setApprovedCoupleInfo] = useState(null)
     const [senderCoupleInfo, setSenderCoupleInfo] = useState(null)
     const [receiverCoupleInfo, setReceiverCoupleInfo] = useState(null)
 
-    console.log(userId)
     const getCouplebySenderId = async (useId) => {
         if (userId == null) {
             return
         }
         try {
-            let res = await axios.get('/apis/v1/couples?userid=' + userId)
+            let res = await axios.get(
+                '/apis/v1/couples/senders?phase=awaiting&userid=' + userId
+            )
             if (res.status == 204) {
                 setSenderCoupleInfo({})
                 return
@@ -27,14 +30,14 @@ const Home = () => {
         }
     }
 
-    // receiver id를 통해서 sender id를 조회 
+    // receiver id를 통해서 sender id를 조회
     const getAllCoupleRequestByRecvId = async (useId) => {
         if (userId == null) {
             return
         }
         try {
             let res = await axios.get(
-                '/apis/v1/couples/senders?userid=' + useId
+                '/apis/v1/couples/receivers/all?userid=' + useId
             )
             if (res.status == 204) {
                 setReceiverCoupleInfo([])
@@ -47,12 +50,38 @@ const Home = () => {
         }
     }
 
+    const getAprrovedCoupleRelationbyUserId = async (useId) => {
+        if (userId == null) {
+            return
+        }
+        try {
+            let res = await axios.get(
+                '/apis/v1/couples?phase=approved&userid=' + userId
+            )
+            if (res.status != 204) {
+                let payload = res.data.payload
+                setApprovedCoupleInfo(payload)
+                setSenderCoupleInfo({})
+                setReceiverCoupleInfo({})
+                return
+            }
+            setApprovedCoupleInfo({})
+            getCouplebySenderId(userId)
+            getAllCoupleRequestByRecvId(userId)
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
     useEffect(() => {
-        getCouplebySenderId(userId)
-        getAllCoupleRequestByRecvId(userId)
+        getAprrovedCoupleRelationbyUserId(userId)
     }, [])
 
-    if (senderCoupleInfo == null || receiverCoupleInfo == null) {
+    if (
+        approvedCoupleInfo == null ||
+        senderCoupleInfo == null ||
+        receiverCoupleInfo == null
+    ) {
         return (
             <Container>
                 <Row>
@@ -74,16 +103,24 @@ const Home = () => {
                     </Col>
                 </Row>
 
-                <Alert key="to" variant="primary">
-                    내가 보낸 요청
-                </Alert>
-                <ConnectCoupleSender coupleInfo={senderCoupleInfo} />
-                <br />
+                {JSON.stringify(approvedCoupleInfo) != JSON.stringify({}) ? (
+                    <ApprovedCouple coupleInfo={approvedCoupleInfo} />
+                ) : (
+                    <>
+                        <Alert key="to" variant="primary">
+                            내가 보낸 요청
+                        </Alert>
+                        <ConnectCoupleSender coupleInfo={senderCoupleInfo} />
+                        <br />
 
-                <Alert key="from" variant="primary">
-                    내가 받은 요청
-                </Alert>
-                <ConnectCoupleReceiver coupleInfo={receiverCoupleInfo} />
+                        <Alert key="from" variant="primary">
+                            내가 받은 요청
+                        </Alert>
+                        <ConnectCoupleReceiver
+                            coupleInfo={receiverCoupleInfo}
+                        />
+                    </>
+                )}
             </Container>
         )
     }

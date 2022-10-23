@@ -6,3 +6,10 @@ SenderId라는 속성을 만들었을 때 sender_id로 변경되어 들어간다
 
 
 phase를 쿼리파람으로 줘서 테스트 
+
+senderid로 조회하는 거 하나
+
+receiverid로 조회하는거 하나
+
+둘 다되는 거롤 하나 
+

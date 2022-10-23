@@ -136,9 +136,10 @@ func CreatePost(res http.ResponseWriter, req *http.Request) {
 		util.SetResponse(res, "content doesn't exist", nil, http.StatusBadRequest)
 		return
 	}
-	// 동일 title을 가진 post가 있는지 check
+	// 한 couple id 내에서 동일 title을 가진 post가 있는지 check
 	count, err := df.DbPool.
 		Model(&model.Post{}).
+		Where("couple_id = ?", post.CoupleID).
 		Where("title = ?", post.Title).
 		Count()
 

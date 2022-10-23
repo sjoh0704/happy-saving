@@ -60,8 +60,12 @@ func serveUser() {
 }
 
 func serveCouple() {
-	mux.HandleFunc(apiVersion+"/couples", handler.GetCoupleInfoBySenderId).Queries("userid", "{userid}", "phase", "{phase}").Methods("GET")
-	mux.HandleFunc(apiVersion+"/couples/senders", handler.GetAllCouplesReqByUserId).Queries("userid", "{userid}").Methods("GET")
+	// senderid or receiver id를 통해서 phase에 해당하는 couple을 가져오기
+	mux.HandleFunc(apiVersion+"/couples", handler.GetCoupleInfoBySenderIdOrReceiverId).Queries("userid", "{userid}", "phase", "{phase}").Methods("GET")
+	mux.HandleFunc(apiVersion+"/couples/senders", handler.GetCoupleInfoBySenderId).Queries("userid", "{userid}", "phase", "{phase}").Methods("GET")
+	// mux.HandleFunc(apiVersion+"/couples/senders/all", handler.GetAllCouplesReqBySenderId).Queries("userid", "{userid}").Methods("GET")
+	mux.HandleFunc(apiVersion+"/couples/receivers", handler.GetCoupleInfoByReceiverId).Queries("userid", "{userid}", "phase", "{phase}").Methods("GET")
+	mux.HandleFunc(apiVersion+"/couples/receivers/all", handler.GetAllCouplesReqByReceiverId).Queries("userid", "{userid}").Methods("GET")
 	mux.HandleFunc(apiVersion+"/couples", handler.GetCouplesInfo).Methods("GET")
 	mux.HandleFunc(apiVersion+"/couples/{id:[0-9]+}", handler.GetCoupleInfo).Methods("GET")
 	mux.HandleFunc(apiVersion+"/couples", handler.RequestCouple).Methods("POST")
