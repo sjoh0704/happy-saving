@@ -47,15 +47,16 @@ function Login() {
         <Container>
             <Row>
                 <Col>
-                    <h2>Login</h2>
+                    <h2>로그인</h2>
                 </Col>
             </Row>
+            <br/>
 
             <Row>
                 <Col>
                     <Form>
                         <Form.Group className="mb-3" controlId="formEmail">
-                            <Form.Label>Email address</Form.Label>
+                            <Form.Label>이메일 주소</Form.Label>
                             <Form.Control
                                 type="email"
                                 placeholder="Enter email"
@@ -73,7 +74,7 @@ function Login() {
             <Row>
                 <Col>
                     <Form.Group className="mb-3" controlId="formPassword">
-                        <Form.Label>Password</Form.Label>
+                        <Form.Label>비밀번호</Form.Label>
                         <Form.Control
                             type="password"
                             placeholder="Password"

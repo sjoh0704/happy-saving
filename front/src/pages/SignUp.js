@@ -52,7 +52,7 @@ function SignUp() {
         <Container>
             <Row>
                 <Col>
-                    <h2>Sign Up</h2>
+                    <h2>회원가입</h2>
                 </Col>
             </Row>
             <br />
@@ -60,7 +60,7 @@ function SignUp() {
                 <Col>
                     <Form>
                         <Form.Group className="mb-3" controlId="formEmail">
-                            <Form.Label>Email address</Form.Label>
+                            <Form.Label>이메일 주소</Form.Label>
                             <Form.Control
                                 type="email"
                                 placeholder="Enter email"
@@ -79,7 +79,7 @@ function SignUp() {
                 <Col>
                     <Form>
                         <Form.Group className="mb-3" controlId="formName">
-                            <Form.Label>User Name</Form.Label>
+                            <Form.Label>사용자 이름</Form.Label>
                             <Form.Control
                                 type="email"
                                 placeholder="Enter name"
@@ -145,7 +145,7 @@ function SignUp() {
                         type="submit"
                         onClick={onClickSignUpHandler}
                     >
-                        OK
+                        회원가입
                     </Button>
                 </Col>
             </Row>
