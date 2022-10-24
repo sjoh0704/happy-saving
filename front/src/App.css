@@ -28,6 +28,10 @@
     color: #61dafb;
 }
 
+.twayfont {
+    font-family: 'tway_sky';
+}
+
 @keyframes App-logo-spin {
     from {
         transform: rotate(0deg);
@@ -35,4 +39,9 @@
     to {
         transform: rotate(360deg);
     }
+}
+
+@font-face {
+    font-family: 'tway_sky';
+    src: url('./fonts/tway_sky.ttf');
 }

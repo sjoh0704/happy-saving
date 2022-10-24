@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import { useNavigate } from 'react-router'
 import { Button, Col, Container, Form, Row } from 'react-bootstrap'
+import Title from '../components/Title'
 function Login() {
     const [mail, setMail] = useState('')
     const [password, setPassword] = useState('')
@@ -47,7 +48,7 @@ function Login() {
         <Container>
             <Row>
                 <Col>
-                    <h2>로그인</h2>
+                    <Title title="로그인"/>
                 </Col>
             </Row>
             <br/>
@@ -71,6 +72,7 @@ function Login() {
                     </Form>
                 </Col>
             </Row>
+            <br/>
             <Row>
                 <Col>
                     <Form.Group className="mb-3" controlId="formPassword">

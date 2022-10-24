@@ -7,7 +7,7 @@ const NavigationBar = () => {
         <>
             <Navbar bg="primary" variant="dark">
                 <Container>
-                    <Navbar.Brand href="/">Happy Saving</Navbar.Brand>
+                    <Navbar.Brand href="/">🌈 Happy Saving</Navbar.Brand>
                     <Nav className="me-auto">
                         <Nav.Link href="/">Home</Nav.Link>
                         <Nav.Link href="/login">로그인</Nav.Link>

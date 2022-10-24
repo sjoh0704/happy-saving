@@ -9,6 +9,7 @@ import {
     Row
 } from 'react-bootstrap'
 import { useNavigate } from 'react-router'
+import Title from '../components/Title'
 
 const CreatePost = () => {
     const navigate = useNavigate()
@@ -48,7 +49,7 @@ const CreatePost = () => {
             <Container>
                 <Row>
                     <Col>
-                        <h3>post 작성하기</h3>
+                        <Title title="행복 저금하기"/>
                     </Col>
                 </Row>
                 <br />

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, Col, Row, Table } from 'react-bootstrap'
+import { Accordion, Badge, Button, Col, Row, Table } from 'react-bootstrap'
 import { useNavigate } from 'react-router'
 import { changeTimeFormat } from '../util/util'
 
@@ -13,14 +13,30 @@ const ApprovedCouple = (props) => {
         .slice(0)
         .reverse()
         .map((post, index) => (
-            <tr key={index}>
-                <td>{postSize - index}</td>
-                <td>
-                    <a href={'/post/' + post.id}>{post.title}</a>
-                </td>
-                <td>{findAuthorName(post.author_id, coupleInfo)}</td>
-                <td>{changeTimeFormat(post.created_at)}</td>
-            </tr>
+            <Accordion.Item eventKey={index} key={index}>
+                <Accordion.Header>
+                    #{postSize - index} {post.title}
+                    <span>
+                        ........
+                    </span>
+                    <Badge bg="primary">
+                        {findAuthorName(post.author_id, coupleInfo)}
+                    </Badge>
+                </Accordion.Header>
+                <Accordion.Body>
+                    <p>{changeTimeFormat(post.created_at)}</p>
+
+                    <p>{post.content}</p>
+                </Accordion.Body>
+            </Accordion.Item>
+            // <tr key={index}>
+            //     <td>{postSize - index}</td>
+            //     <td>
+            //         <a href={'/post/' + post.id}>{post.title}</a>
+            //     </td>
+            //     <td>{findAuthorName(post.author_id, coupleInfo)}</td>
+            //     <td>{changeTimeFormat(post.created_at)}</td>
+            // </tr>
         ))
 
     const onClickMoveAddPostPage = () => {
@@ -33,17 +49,8 @@ const ApprovedCouple = (props) => {
                 {sender.name} ❤ {receiver.name}
             </h3>
             <br />
-            <Table striped bordered hover>
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Title</th>
-                        <th>Username</th>
-                        <th>CreatedAt</th>
-                    </tr>
-                </thead>
-                <tbody>{prettyPosts}</tbody>
-            </Table>
+            <Accordion>{prettyPosts}</Accordion>
+            <br />
             <Row>
                 <Col>
                     <Button onClick={onClickMoveAddPostPage}>추가</Button>{' '}

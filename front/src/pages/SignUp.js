@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import { useNavigate } from 'react-router'
 import { Button, Col, Container, Form, Row } from 'react-bootstrap'
+import Title from '../components/Title'
 function SignUp() {
     const navigate = useNavigate()
     const [userData, setUserData] = useState({
@@ -52,10 +53,10 @@ function SignUp() {
         <Container>
             <Row>
                 <Col>
-                    <h2>회원가입</h2>
+                    <Title title="회원가입" />
                 </Col>
             </Row>
-            <br />
+
             <Row>
                 <Col>
                     <Form>
