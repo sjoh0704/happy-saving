@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: backend
+spec:
+  selector:
+    matchLabels:
+      app: backend
+  replicas: 1
+  template: 
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: docker.io/tmdwn0704/happy-saving-backend:test1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+        command: ["./main"]
+        env:
+        - name: HOSTNAME
+          value: postgres.postgres.svc
+        - name: DB_USER
+          value: postgres
+        - name: DB_PASSWORD
+          value: "1q2w3e4r"
+        - name: DB_PORT
+          value: "5432"        
+        - name: DB_NAME
+          value: postgres
+        livenessProbe:
+          httpGet:
+            path: /ready
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 5
+          
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8000
+          periodSeconds: 2
+        resources: {}
