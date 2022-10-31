@@ -81,16 +81,26 @@ const MakeCouple = () => {
     return (
         <Container>
             <Row>
-                <Col>
-                    <h2>파트너 검색</h2>
+                <Col
+                    lg={{ span: 8, offset: 2 }}
+                    sm={{ span: 10, offset: 1 }}
+                    xs={{ span: 12, offset: 0 }}
+                >
+                    <p style={{ fontWeight: 'bold', fontSize: '1.5rem' }}>
+                        커플 등록하기
+                    </p>
                 </Col>
             </Row>
 
             <Row>
-                <Col>
+                <Col
+                    lg={{ span: 8, offset: 2 }}
+                    sm={{ span: 10, offset: 1 }}
+                    xs={{ span: 12, offset: 0 }}
+                >
                     <Form>
                         <Form.Group className="mb-3" controlId="formEmail">
-                            <Form.Label>Email address</Form.Label>
+                            <Form.Label>이메일 주소</Form.Label>
                             <Form.Control
                                 type="email"
                                 placeholder="Enter email"
@@ -99,27 +109,36 @@ const MakeCouple = () => {
                                 onChange={onChangeHandler}
                             />
                             <Form.Text className="text-muted">
-                                파트너 이메일을 검색해보세요
+                                상대방 이메일을 검색하세요
                             </Form.Text>
                         </Form.Group>
                     </Form>
                 </Col>
             </Row>
             <Row>
-                <Col>
+                <Col
+                    lg={{ span: 8, offset: 2 }}
+                    sm={{ span: 10, offset: 1 }}
+                    xs={{ span: 12, offset: 0 }}
+                >
                     <Button
                         variant="primary"
                         type="submit"
                         onClick={onClickHandler}
+                        style={{ minWidth: '25%' }}
                     >
                         검색
                     </Button>
                 </Col>
             </Row>
-            <br />
+            <div style={{ height: '3rem' }}></div>
 
             <Row>
-                <Col>
+                <Col
+                    lg={{ span: 8, offset: 2 }}
+                    sm={{ span: 10, offset: 1 }}
+                    xs={{ span: 12, offset: 0 }}
+                >
                     {candidate == null ? (
                         <div></div>
                     ) : (

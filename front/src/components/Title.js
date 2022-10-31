@@ -5,7 +5,9 @@ function Title(props) {
     return (
         <>
             <Alert variant="primary">
-                <Alert.Heading>{title}</Alert.Heading>
+                <Alert.Heading>
+                    <p >{title}</p>
+                </Alert.Heading>
                 {/* <p>
                     Aww yeah, you successfully read this important alert
                     message. This example text is going to run a bit longer so

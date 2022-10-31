@@ -1,9 +1,11 @@
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { Row, Col, Button } from 'react-bootstrap'
+import { useNavigate } from 'react-router'
 
 const ConnectCoupleSender = (props) => {
     const userId = localStorage.getItem('userid')
+    const navigate = useNavigate()
     // const [coupleInfo, setCoupleInfo] = useState(props.coupleInfo)
     let coupleInfo = props.coupleInfo
 
@@ -25,17 +27,39 @@ const ConnectCoupleSender = (props) => {
         }
     }
 
-    // 빈 객체일 때 
+    // 빈 객체일 때
     if (JSON.stringify(coupleInfo) == JSON.stringify({})) {
         return (
-            <Row>
-                <Col>
-                    <p>couple 등록이 안되어 있습니다.</p>
-                    <p>couple 등록을 해주세요</p>
-
-                    <a href="/couple/make">couple 등록 신청</a>
-                </Col>
-            </Row>
+            <>
+                <Row>
+                    <Col>
+                        <p
+                            style={{
+                                fontWeight: 'bold',
+                                padding: '5%',
+                                fontSize: '1.2rem'
+                            }}
+                        >
+                            couple 등록이 안되어 있습니다. couple 등록을
+                            해주세요
+                        </p>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <Button
+                            style={{ minWidth: '25%' }}
+                            variant="primary"
+                            type="submit"
+                            onClick={() => {
+                                navigate('/couple/make')
+                            }}
+                        >
+                            커플 등록하기
+                        </Button>
+                    </Col>
+                </Row>
+            </>
         )
     }
 
@@ -43,7 +67,13 @@ const ConnectCoupleSender = (props) => {
         return (
             <Row>
                 <Col>
-                    <p>
+                    <p
+                        style={{
+                            fontWeight: 'bold',
+                            padding: '5%',
+                            fontSize: '1.2rem'
+                        }}
+                    >
                         {coupleInfo.receiver.name} 님에게 커플 요청을
                         보냈습니다.
                     </p>

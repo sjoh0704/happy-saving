@@ -15,7 +15,7 @@ const NavigationBar = () => {
                     </Nav>
                 </Container>
             </Navbar>
-            <br/>
+            <br />
         </>
     )
 }

@@ -3,6 +3,15 @@ import axios from 'axios'
 import { useNavigate } from 'react-router'
 import { Button, Col, Container, Form, Row } from 'react-bootstrap'
 import Title from '../components/Title'
+
+const style = {
+    // display: 'inline-block',
+    // width: '100px',
+    // height: '100px',
+    // boder: '1px solid black',
+    // background: 'orange'
+}
+
 function Login() {
     const [mail, setMail] = useState('')
     const [password, setPassword] = useState('')
@@ -47,14 +56,22 @@ function Login() {
     return (
         <Container>
             <Row>
-                <Col>
-                    <Title title="로그인"/>
+                <Col
+                    lg={{ span: 8, offset: 2 }}
+                    sm={{ span: 10, offset: 1 }}
+                    xs={{ span: 12, offset: 0 }}
+                >
+                    <Title title="로그인" />
                 </Col>
             </Row>
-            <br/>
+            <br />
 
             <Row>
-                <Col>
+                <Col
+                    lg={{ span: 8, offset: 2 }}
+                    sm={{ span: 10, offset: 1 }}
+                    xs={{ span: 12, offset: 0 }}
+                >
                     <Form>
                         <Form.Group className="mb-3" controlId="formEmail">
                             <Form.Label>이메일 주소</Form.Label>
@@ -72,9 +89,13 @@ function Login() {
                     </Form>
                 </Col>
             </Row>
-            <br/>
+            <br />
             <Row>
-                <Col>
+                <Col
+                    lg={{ span: 8, offset: 2 }}
+                    sm={{ span: 10, offset: 1 }}
+                    xs={{ span: 12, offset: 0 }}
+                >
                     <Form.Group className="mb-3" controlId="formPassword">
                         <Form.Label>비밀번호</Form.Label>
                         <Form.Control
@@ -88,8 +109,13 @@ function Login() {
                 </Col>
             </Row>
             <Row>
-                <Col>
+                <Col
+                    lg={{ span: 8, offset: 2 }}
+                    sm={{ span: 10, offset: 1 }}
+                    xs={{ span: 12, offset: 0 }}
+                >
                     <Button
+                        style={{ minWidth: '25%' }}
                         variant="primary"
                         type="submit"
                         onClick={onClickLoginHandler}

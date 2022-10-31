@@ -60,7 +60,17 @@ const ConnectCoupleReceiver = (props) => {
     if (coupleInfo.length == 0) {
         return (
             <Row>
-                <Col>들어온 couple 요청이 없습니다. </Col>
+                <Col>
+                    <p
+                        style={{
+                            fontWeight: 'bold',
+                            padding: '5%',
+                            fontSize: '1.2rem'
+                        }}
+                    >
+                        들어온 couple 요청이 없습니다.
+                    </p>
+                </Col>
             </Row>
         )
     }

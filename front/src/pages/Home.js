@@ -89,7 +89,11 @@ const Home = () => {
         return (
             <Container>
                 <Row>
-                    <Col>
+                    <Col
+                        lg={{ span: 8, offset: 2 }}
+                        sm={{ span: 10, offset: 1 }}
+                        xs={{ span: 12, offset: 0 }}
+                    >
                         <Loading />
                     </Col>
                 </Row>
@@ -100,31 +104,53 @@ const Home = () => {
             <Container>
                 <Row>
                     <Col
-                    // sm={{ span: 6, offset: 2 }}
-                    // lg={{ span: 4, offset: 3 }}
+                        lg={{ span: 8, offset: 2 }}
+                        sm={{ span: 10, offset: 1 }}
+                        xs={{ span: 12, offset: 0 }}
                     >
-                        {/* <h3>안녕하세요! {name} 님!</h3> */}
+                        {JSON.stringify(approvedCoupleInfo) !=
+                        JSON.stringify({}) ? (
+                            <ApprovedCouple coupleInfo={approvedCoupleInfo} />
+                        ) : (
+                            <>
+                                <Alert key="to" variant="primary">
+                                    <p
+                                        style={{
+                                            padding: [0, 'auto'],
+                                            fontWeight: 'bold',
+                                            fontSize: '1.3rem'
+                                        }}
+                                    >
+                                        내가 보낸 요청
+                                    </p>
+                                </Alert>
+                                <ConnectCoupleSender
+                                    coupleInfo={senderCoupleInfo}
+                                />
+                                <br />
+                                <div
+                                style={{height: '3rem'}}>
+
+                                </div>
+
+                                <Alert key="from" variant="primary">
+                                    <p
+                                        style={{
+                                            padding: [0, 'auto'],
+                                            fontWeight: 'bold',
+                                            fontSize: '1.3rem'
+                                        }}
+                                    >
+                                        내가 받은 요청
+                                    </p>
+                                </Alert>
+                                <ConnectCoupleReceiver
+                                    coupleInfo={receiverCoupleInfo}
+                                />
+                            </>
+                        )}
                     </Col>
                 </Row>
-
-                {JSON.stringify(approvedCoupleInfo) != JSON.stringify({}) ? (
-                    <ApprovedCouple coupleInfo={approvedCoupleInfo} />
-                ) : (
-                    <>
-                        <Alert key="to" variant="primary">
-                            내가 보낸 요청
-                        </Alert>
-                        <ConnectCoupleSender coupleInfo={senderCoupleInfo} />
-                        <br />
-
-                        <Alert key="from" variant="primary">
-                            내가 받은 요청
-                        </Alert>
-                        <ConnectCoupleReceiver
-                            coupleInfo={receiverCoupleInfo}
-                        />
-                    </>
-                )}
             </Container>
         )
     }

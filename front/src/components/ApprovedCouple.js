@@ -16,9 +16,7 @@ const ApprovedCouple = (props) => {
             <Accordion.Item eventKey={index} key={index}>
                 <Accordion.Header>
                     #{postSize - index} {post.title}
-                    <span>
-                        ........
-                    </span>
+                    <span>........</span>
                     <Badge bg="primary">
                         {findAuthorName(post.author_id, coupleInfo)}
                     </Badge>
@@ -52,7 +50,9 @@ const ApprovedCouple = (props) => {
             <Accordion>{prettyPosts}</Accordion>
             <br />
             <Row>
-                <Col>
+                <Col
+                
+                >
                     <Button onClick={onClickMoveAddPostPage}>추가</Button>{' '}
                     <Button disabled>업데이트</Button>{' '}
                     <Button disabled>삭제</Button>

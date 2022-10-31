@@ -52,13 +52,21 @@ function SignUp() {
     return (
         <Container>
             <Row>
-                <Col>
+                <Col
+                    lg={{ span: 8, offset: 2 }}
+                    sm={{ span: 10, offset: 1 }}
+                    xs={{ span: 12, offset: 0 }}
+                >
                     <Title title="회원가입" />
                 </Col>
             </Row>
 
             <Row>
-                <Col>
+                <Col
+                    lg={{ span: 8, offset: 2 }}
+                    sm={{ span: 10, offset: 1 }}
+                    xs={{ span: 12, offset: 0 }}
+                >
                     <Form>
                         <Form.Group className="mb-3" controlId="formEmail">
                             <Form.Label>이메일 주소</Form.Label>
@@ -77,7 +85,11 @@ function SignUp() {
                 </Col>
             </Row>
             <Row>
-                <Col>
+                <Col
+                    lg={{ span: 8, offset: 2 }}
+                    sm={{ span: 10, offset: 1 }}
+                    xs={{ span: 12, offset: 0 }}
+                >
                     <Form>
                         <Form.Group className="mb-3" controlId="formName">
                             <Form.Label>사용자 이름</Form.Label>
@@ -96,7 +108,11 @@ function SignUp() {
                 </Col>
             </Row>
             <Row>
-                <Col>
+                <Col
+                    lg={{ span: 8, offset: 2 }}
+                    sm={{ span: 10, offset: 1 }}
+                    xs={{ span: 12, offset: 0 }}
+                >
                     <Form.Group className="mb-3" controlId="formPassword">
                         <Form.Label>비밀번호</Form.Label>
                         <Form.Control
@@ -110,7 +126,11 @@ function SignUp() {
                 </Col>
             </Row>
             <Row>
-                <Col>
+                <Col
+                    lg={{ span: 8, offset: 2 }}
+                    sm={{ span: 10, offset: 1 }}
+                    xs={{ span: 12, offset: 0 }}
+                >
                     <Form.Group className="mb-3" controlId="formPasswordCheck">
                         <Form.Label>비밀번호 확인</Form.Label>
                         <Form.Control
@@ -124,7 +144,11 @@ function SignUp() {
                 </Col>
             </Row>
             <Row>
-                <Col>
+                <Col
+                    lg={{ span: 8, offset: 2 }}
+                    sm={{ span: 10, offset: 1 }}
+                    xs={{ span: 12, offset: 0 }}
+                >
                     <Form>
                         <Form.Group className="mb-3" controlId="formGender">
                             <Form.Label>성별(male/female)</Form.Label>
@@ -140,8 +164,13 @@ function SignUp() {
                 </Col>
             </Row>
             <Row>
-                <Col>
+                <Col
+                    lg={{ span: 8, offset: 2 }}
+                    sm={{ span: 10, offset: 1 }}
+                    xs={{ span: 12, offset: 0 }}
+                >
                     <Button
+                        style={{ minWidth: '25%' }}
                         variant="primary"
                         type="submit"
                         onClick={onClickSignUpHandler}
